@@ -146,22 +146,26 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
     }
 
     // Increment Nominee and Event Votes
-    const votesToIncrement = Number(voteData.votes);
+    const votesToIncrement = Number(voteData.votes || voteData.quantity || 1);
     console.log(`Incrementing votes (${votesToIncrement}) via RPC for nominee: ${voteData.nominee_id} and event: ${voteData.event_id}`);
     
-    if (voteData.nominee_id) {
-      const { error: rpcErr1 } = await supabase.rpc('increment_nominee_votes', { 
-        row_id: voteData.nominee_id, 
+    try {
+      if (voteData.nominee_id) {
+        const { error: rpcErr1 } = await supabase.rpc('increment_nominee_votes', { 
+          row_id: voteData.nominee_id, 
+          votes: votesToIncrement 
+        });
+        if (rpcErr1) console.error("RPC increment_nominee_votes failed:", rpcErr1.message);
+      }
+      
+      const { error: rpcErr2 } = await supabase.rpc('increment_event_votes', { 
+        row_id: voteData.event_id, 
         votes: votesToIncrement 
       });
-      if (rpcErr1) console.error("RPC increment_nominee_votes failed:", rpcErr1.message);
+      if (rpcErr2) console.error("RPC increment_event_votes failed:", rpcErr2.message);
+    } catch (e) {
+      console.error("Critical error during Voting RPC increment:", e);
     }
-    
-    const { error: rpcErr2 } = await supabase.rpc('increment_event_votes', { 
-      row_id: voteData.event_id, 
-      votes: votesToIncrement 
-    });
-    if (rpcErr2) console.error("RPC increment_event_votes failed:", rpcErr2.message);
   }
 
   return { success: true, transaction: transactionRecord };

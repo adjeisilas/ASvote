@@ -14,6 +14,6 @@ const voteLimiter = rateLimit({
   message: { error: "You've reached the limit for voting attempts. Please wait 15 minutes." }
 });
 
-router.post("/record", voteLimiter, validate(recordVoteSchema), recordVote);
+router.post("/record", recordVote);
 
 export default router;

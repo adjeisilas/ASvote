@@ -11,9 +11,13 @@ const getSupabase = () => {
   const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "";
 
-  if (!supabaseUrl || !supabaseServiceKey) {
-    console.warn("Supabase credentials missing. Check environment variables.");
-    // We don't throw yet to allow non-Supabase parts of the app to function
+  if (!supabaseUrl || !supabaseServiceKey || !supabaseUrl.startsWith('http')) {
+    if (!supabaseUrl) console.error("CRITICAL: SUPABASE_URL is missing!");
+    else if (!supabaseUrl.startsWith('http')) console.error("CRITICAL: SUPABASE_URL is invalid:", supabaseUrl);
+    
+    if (!supabaseServiceKey) console.error("CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing!");
+    
+    console.warn("Supabase credentials missing or invalid. Check environment variables.");
     return null;
   }
 

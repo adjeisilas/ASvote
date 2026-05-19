@@ -4,13 +4,14 @@ import { processSuccessfulPayment } from "../services/voting.service";
 import { voteDataSchema } from "../lib/schemas";
 
 export const recordVote = async (req: Request, res: Response) => {
-  const { voteData: clientVoteData, reference } = req.body;
-
-  if (!reference) {
-    return res.status(400).json({ error: "Payment reference is required" });
-  }
-
+  console.log("recordVote controller started");
   try {
+    const { voteData: clientVoteData, reference } = req.body;
+    console.log("Request body received:", { reference, hasVoteData: !!clientVoteData });
+
+    if (!reference) {
+      return res.status(400).json({ error: "Payment reference is required" });
+    }
     // 1. Verify Payment with Paystack
     const verifyRes = await verifyPaystackPayment(reference);
 

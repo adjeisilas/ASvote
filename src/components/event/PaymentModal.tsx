@@ -329,15 +329,16 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
       }
     } catch (error: any) {
       console.error("Payment verification error:", error);
-      let msg = error.response?.data?.details || error.response?.data?.error || error.message || "Unknown error";
       
-      // Safety check: ensure msg is a string before setting it to state
-      if (typeof msg !== 'string') {
-        try {
-          msg = JSON.stringify(msg);
-        } catch (e) {
-          msg = "An unexpected error occurred during verification";
-        }
+      const responseData = error.response?.data;
+      let msg = "An unexpected error occurred during verification";
+
+      if (typeof responseData === 'string') {
+        msg = responseData;
+      } else if (responseData && typeof responseData === 'object') {
+        msg = responseData.message || responseData.details || responseData.error || JSON.stringify(responseData);
+      } else {
+        msg = error.message || msg;
       }
       
       setErrorMessage(msg);
