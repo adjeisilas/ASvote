@@ -402,7 +402,8 @@ export const databaseService = {
     if (updates.title) baseUpdates.title = updates.title;
     if (updates.description) baseUpdates.description = updates.description;
     if (updates.status) baseUpdates.status = updates.status;
-    if (updates.coverImage) baseUpdates.cover_image = updates.coverImage;
+    const coverImage = updates.coverImage || updates.cover_image;
+    if (coverImage) baseUpdates.cover_image = coverImage;
     if (updates.tags) baseUpdates.tags = updates.tags;
     
     if (Object.keys(baseUpdates).length > 0) {
@@ -418,8 +419,11 @@ export const databaseService = {
     
     if (current?.type === 'voting') {
       const voteUpdates: any = {};
-      if (updates.startDate) voteUpdates.start_date = updates.startDate;
-      if (updates.endDate) voteUpdates.end_date = updates.endDate;
+      const startDate = updates.startDate || updates.start_date;
+      const endDate = updates.endDate || updates.end_date;
+      
+      if (startDate) voteUpdates.start_date = startDate;
+      if (endDate) voteUpdates.end_date = endDate;
       if (updates.commission !== undefined) voteUpdates.commission = updates.commission;
       if (updates.votingInstructions !== undefined) voteUpdates.voting_instructions = updates.votingInstructions;
       if (updates.multipleVotesEnabled !== undefined) voteUpdates.multiple_votes_enabled = updates.multipleVotesEnabled;

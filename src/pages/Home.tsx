@@ -19,6 +19,7 @@ export default function Home() {
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
   const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isUsingFallbacks, setIsUsingFallbacks] = useState(false);
 
   const fallbackSlides = [
     {
@@ -54,22 +55,31 @@ export default function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
+        const now = new Date();
         const mappedEvents = await databaseService.getEvents({ status: 'active' });
-        setEvents(mappedEvents);
-        setFilteredEvents(mappedEvents);
         
-        // Take top 5 events for carousel, prioritize voting events as "live competitions"
-        const topEvents = [...mappedEvents]
+        // Filter out events that have already ended
+        const activeEvents = mappedEvents.filter(e => {
+          if (!e.endDate) return true;
+          return new Date(e.endDate) > now;
+        });
+
+        setEvents(mappedEvents); // Keep all active status events for the list (we'll handle ENDED state in cards)
+        
+        // Take top 5 non-ended events for carousel, prioritize voting events
+        const topEvents = [...activeEvents]
           .sort((a, b) => (b.type === 'voting' ? 1 : 0) - (a.type === 'voting' ? 1 : 0))
           .slice(0, 5);
         
         const displaySlides = topEvents.length > 0 ? topEvents : (fallbackSlides as any as Event[]);
         setFeaturedEvents(displaySlides);
         setFeaturedEvent(displaySlides[0]);
+        setIsUsingFallbacks(topEvents.length === 0);
       } catch (error) {
         console.error("Error fetching events:", error);
         setFeaturedEvents(fallbackSlides as any as Event[]);
         setFeaturedEvent(fallbackSlides[0] as any as Event);
+        setIsUsingFallbacks(true);
       } finally {
         setLoading(false);
       }
@@ -202,31 +212,43 @@ export default function Home() {
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute inset-0 perspective-1000"
                       >
-                        <Link to={`/event/${featuredEvent.id}`}>
-                          <div className="bg-card p-5 rounded-[3rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] border border-border relative overflow-hidden transition-all duration-700 h-full flex flex-col group-hover:shadow-[0_80px_160px_-40px_rgba(79,70,229,0.15)] group-hover:-translate-y-2">
+                        {isUsingFallbacks ? (
+                          <div className="bg-card p-5 rounded-[3rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] border border-border relative overflow-hidden transition-all duration-700 h-full flex flex-col cursor-default">
                              <div className="relative flex-1 overflow-hidden rounded-[2.2rem]">
                               <img 
                                 src={featuredEvent.coverImage || "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000"} 
                                 alt={featuredEvent.title} 
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                className="w-full h-full object-cover"
                               />
-                              <div className="absolute top-5 left-5">
-                                <Badge className="bg-background/90 backdrop-blur-xl text-foreground border-none shadow-sm px-5 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest">
-                                  FEATURED
-                                </Badge>
-                              </div>
-                              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent">
-                                <div className="flex items-end justify-between gap-6">
-                                  <div className="min-w-0">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 mb-2">Live Engagement</p>
-                                    <h3 className="text-4xl font-black text-white tracking-tighter line-clamp-1 truncate">{featuredEvent.title}</h3>
+                            </div>
+                          </div>
+                        ) : (
+                          <Link to={`/event/${featuredEvent.id}`}>
+                            <div className="bg-card p-5 rounded-[3rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] border border-border relative overflow-hidden transition-all duration-700 h-full flex flex-col group-hover:shadow-[0_80px_160px_-40px_rgba(79,70,229,0.15)] group-hover:-translate-y-2">
+                               <div className="relative flex-1 overflow-hidden rounded-[2.2rem]">
+                                <img 
+                                  src={featuredEvent.coverImage || "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000"} 
+                                  alt={featuredEvent.title} 
+                                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                />
+                                <div className="absolute top-5 left-5">
+                                  <Badge className="bg-background/90 backdrop-blur-xl text-foreground border-none shadow-sm px-5 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest">
+                                    FEATURED
+                                  </Badge>
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent">
+                                  <div className="flex items-end justify-between gap-6">
+                                    <div className="min-w-0">
+                                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/70 mb-2">Live Engagement</p>
+                                      <h3 className="text-4xl font-black text-white tracking-tighter line-clamp-1 truncate">{featuredEvent.title}</h3>
+                                    </div>
+                                    <div className="bg-emerald-400 text-slate-900 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shrink-0 shadow-lg shadow-emerald-400/20">LIVE</div>
                                   </div>
-                                  <div className="bg-emerald-400 text-slate-900 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shrink-0 shadow-lg shadow-emerald-400/20">LIVE</div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </Link>
+                          </Link>
+                        )}
                       </motion.div>
                     ) : (
                       <div className="absolute inset-0 bg-slate-50 animate-pulse rounded-[3rem]"></div>
@@ -337,12 +359,18 @@ export default function Home() {
                       referrerPolicy="no-referrer"
                     />
                     
-                    {/* LIVE Badge */}
+                    {/* LIVE/ENDED Badge */}
                     <div className="absolute top-3 left-3">
-                       <div className="bg-[#4ADE80] text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                          <span className="text-[9px] font-black uppercase tracking-wider">LIVE</span>
-                       </div>
+                       {event.endDate && new Date(event.endDate) < new Date() ? (
+                         <div className="bg-rose-500 text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                            <span className="text-[9px] font-black uppercase tracking-wider">ENDED</span>
+                         </div>
+                       ) : (
+                         <div className="bg-[#4ADE80] text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                            <span className="text-[9px] font-black uppercase tracking-wider">LIVE</span>
+                         </div>
+                       )}
                     </div>
                   </div>
                   
@@ -365,17 +393,26 @@ export default function Home() {
                     <div className="flex items-center justify-between w-full mb-4 px-1">
                        <div className="text-left">
                           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0">Status</p>
-                          <p className="text-[10px] font-bold text-foreground uppercase">{event.status}</p>
+                          <p className={`text-[10px] font-bold uppercase ${event.endDate && new Date(event.endDate) < new Date() ? 'text-rose-500' : 'text-foreground'}`}>
+                            {event.endDate && new Date(event.endDate) < new Date() ? 'CLOSED' : event.status}
+                          </p>
                        </div>
                        <div className="text-right">
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0">Closing</p>
-                          <p className="text-[10px] font-bold text-rose-500 uppercase">{formatSafeDistanceToNow(event.endDate || event.updatedAt).replace('about ', '')}</p>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0">
+                            {event.endDate && new Date(event.endDate) < new Date() ? 'Ended' : 'Closing'}
+                          </p>
+                          <p className={`text-[10px] font-bold uppercase ${event.endDate && new Date(event.endDate) < new Date() ? 'text-muted-foreground' : 'text-rose-500'}`}>
+                            {event.endDate && new Date(event.endDate) < new Date() 
+                              ? formatSafeDistanceToNow(event.endDate).replace('about ', '')
+                              : formatSafeDistanceToNow(event.endDate || event.updatedAt).replace('about ', '')
+                            }
+                          </p>
                        </div>
                     </div>
                     
                     <Link to={`/event/${event.id}`} className="w-full mt-auto">
                       <Button variant="outline" className="w-full h-10 border-2 border-border hover:border-blue-600 hover:bg-blue-600 hover:text-white text-foreground font-bold rounded-xl transition-all group/btn flex items-center justify-center gap-2 uppercase text-[10px] tracking-widest bg-transparent">
-                        {event.type === 'voting' ? 'VOTE' : 'TICKETS'} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                        {event.endDate && new Date(event.endDate) < new Date() ? 'VIEW RESULTS' : (event.type === 'voting' ? 'VOTE' : 'TICKETS')} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                       </Button>
                     </Link>
                   </div>

@@ -137,6 +137,7 @@ export default function EventDetail() {
 
   const hasNominees = nominees.length > 0;
   const hasCategories = categories.length > 0;
+  const isEnded = event.endDate ? new Date(event.endDate) < new Date() : false;
 
   return (
     <div className="bg-background text-foreground min-h-screen pb-32 transition-colors duration-300">
@@ -213,8 +214,8 @@ export default function EventDetail() {
                      <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1 md:mb-2 block">Countdown</span>
                      <div className="flex items-center gap-2 md:gap-3 text-white font-black tracking-tight">
                         <Timer className="w-4 h-4 md:w-5 md:h-5 text-rose-400" />
-                        <span className="text-lg md:text-xl uppercase truncate">
-                          {formatDistanceToNow(new Date(event.endDate || new Date()))}
+                        <span className={`text-lg md:text-xl uppercase truncate ${isEnded ? 'text-rose-500' : ''}`}>
+                          {isEnded ? 'Polls Ended' : formatSafeDistanceToNow(event.endDate).replace('in ', '')}
                         </span>
                      </div>
                   </div>
@@ -277,8 +278,9 @@ export default function EventDetail() {
                            <Button 
                               variant="outline"
                               className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl border-border font-black uppercase tracking-[0.2em] text-[10px] hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all gap-3"
+                              disabled={isEnded}
                            >
-                              {event.type === 'ticketing' ? 'BUY TICKET' : 'EXPLORE CATEGORY'}
+                              {isEnded ? 'VOTING ENDED' : (event.type === 'ticketing' ? 'BUY TICKET' : 'EXPLORE CATEGORY')}
                               <ArrowRight className="w-4 h-4" />
                            </Button>
                          </div>
@@ -534,7 +536,9 @@ export default function EventDetail() {
                           </div>
                           <Button 
                             className="w-full h-16 bg-primary hover:bg-indigo-600 text-primary-foreground rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl transition-all hover:scale-[1.02] border-none"
+                            disabled={isEnded}
                             onClick={() => {
+                              if (isEnded) return;
                               const mockNominee = {
                                 id: category.id,
                                 name: category.name,
@@ -546,7 +550,7 @@ export default function EventDetail() {
                               handleVoteClick(mockNominee);
                             }}
                           >
-                            REGISTER & BUY NOW
+                            {isEnded ? 'REGISTRATION CLOSED' : 'REGISTER & BUY NOW'}
                           </Button>
                         </Card>
                       </motion.div>
@@ -604,9 +608,10 @@ export default function EventDetail() {
                               <div className="w-full mt-auto">
                                 <Button 
                                   className="w-full h-11 bg-primary hover:bg-indigo-600 text-primary-foreground rounded-xl gap-2 transition-all shadow-xl shadow-indigo-500/10 border-none font-black text-[10px] tracking-[0.2em] uppercase group/btn"
-                                  onClick={() => handleVoteClick(nominee)}
+                                  disabled={isEnded}
+                                  onClick={() => !isEnded && handleVoteClick(nominee)}
                                 >
-                                  {event.type === 'ticketing' ? 'BUY TICKET' : 'VOTE NOW'}
+                                  {isEnded ? 'ENDED' : (event.type === 'ticketing' ? 'BUY TICKET' : 'VOTE NOW')}
                                   <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" strokeWidth={3} />
                                 </Button>
                               </div>
