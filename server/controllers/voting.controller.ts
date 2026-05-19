@@ -90,19 +90,30 @@ export const recordVote = async (req: Request, res: Response) => {
     // 5. Success
     console.log(`[${reference}] Recording vote/ticket in database via voting.service...`);
     const result = await processSuccessfulPayment(reference, validatedVoteData).catch(e => {
-        console.error(`[${reference}] processSuccessfulPayment CRASHED:`, e.message);
+        console.error(`[${reference}] processSuccessfulPayment CRASHED:`, e);
         throw e;
     });
     
-    if (!result.success) {
-      console.error(`[${reference}] Database recording logic returned failure:`, result);
-      return res.status(400).json(result);
+    if (!result || !result.success) {
+      console.error(`[${reference}] Database recording logic returned failure structure:`, result);
+      return res.status(500).json({
+        success: false,
+        error: "Database processing failed",
+        message: (result as any)?.message || "Internal database processing error",
+        details: result,
+        ref: reference
+      });
     }
 
     console.log(`[${reference}] RECORDING SUCCESSFUL!`);
-    return res.json(result);
+    return res.json({
+      success: true,
+      message: "Payment verified and recorded successfully",
+      data: result.transaction,
+      ref: reference
+    });
   } catch (error: any) {
-    console.error("Controller CRASH:", error);
+    console.error(`[${reference || 'NO_REF'}] Controller catch block triggered:`, error);
     
     const statusCode = error.name === 'ZodError' ? 400 : (error.response?.status || 500);
     const errorMessage = error.message || "Unknown internal error";
@@ -111,9 +122,9 @@ export const recordVote = async (req: Request, res: Response) => {
       success: false,
       error: error.name === 'ZodError' ? "Validation Error" : "Processing Error", 
       message: errorMessage,
-      details: error.response?.data || error.details || error.issues || (process.env.NODE_ENV === 'development' ? error.stack : "Check server logs"),
+      details: error.response?.data || error.details || error.issues || "Check server logs",
       code: statusCode,
-      ref: reference
+      ref: reference || "missing"
     });
   }
 };
