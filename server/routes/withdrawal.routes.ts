@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { requestWithdrawal } from "../controllers/withdrawal.controller";
-import { validate } from "../middleware/validate";
-import { requestWithdrawalSchema } from "../lib/schemas";
+import { requestWithdrawal } from "../controllers/withdrawal.controller.js";
+import { validate } from "../middleware/validate.js";
+import { requestWithdrawalSchema } from "../lib/schemas.js";
 import { rateLimit } from "express-rate-limit";
-import { authenticateUser } from "../middleware/auth.middleware";
+import { authenticateUser } from "../middleware/auth.middleware.js";
 
 const router = Router();
 

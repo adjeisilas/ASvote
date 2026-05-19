@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { supabase } from "../lib/supabase";
-import { initializePaystackCharge } from "../services/payment.service";
+import { supabase } from "../lib/supabase.js";
+import { initializePaystackCharge } from "../services/payment.service.js";
 
 export const handleUSSD = async (req: Request, res: Response) => {
   const sessionID = req.body.sessionID || req.body.sessionId;

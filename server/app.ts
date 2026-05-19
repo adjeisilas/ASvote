@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import apiRoutes from "./routes/index.ts";
+import apiRoutes from "./routes/index.js";
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.get("/api/ping", (req, res) => {
 
 app.get("/api/db-status", async (req, res) => {
   try {
-    const { supabase } = await import("./lib/supabase.ts");
+    const { supabase } = await import("./lib/supabase.js");
     const { data, error } = await supabase.from('events').select('count', { count: 'exact', head: true });
     
     res.json({

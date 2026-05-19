@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
-import { verifyPaystackPayment } from "../services/payment.service";
-import { processSuccessfulPayment } from "../services/voting.service";
-import { voteDataSchema } from "../lib/schemas";
+import { verifyPaystackPayment } from "../services/payment.service.js";
+import { processSuccessfulPayment } from "../services/voting.service.js";
+import { voteDataSchema } from "../lib/schemas.js";
 
 export const verifyPayment = async (req: Request, res: Response) => {
   const { reference } = req.params;

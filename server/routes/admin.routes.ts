@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { deleteUserAuth } from "../controllers/admin.controller.ts";
-import { validate } from "../middleware/validate.ts";
-import { deleteUserAuthSchema } from "../lib/schemas.ts";
+import { deleteUserAuth } from "../controllers/admin.controller.js";
+import { validate } from "../middleware/validate.js";
+import { deleteUserAuthSchema } from "../lib/schemas.js";
 import { rateLimit } from "express-rate-limit";
-import { authenticateUser, requireAdmin } from "../middleware/auth.middleware.ts";
+import { authenticateUser, requireAdmin } from "../middleware/auth.middleware.js";
 
 const router = Router();
 

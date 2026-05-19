@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { handleUSSD } from "../controllers/ussd.controller.ts";
-import { validate } from "../middleware/validate.ts";
-import { ussdSchema } from "../lib/schemas.ts";
+import { handleUSSD } from "../controllers/ussd.controller.js";
+import { validate } from "../middleware/validate.js";
+import { ussdSchema } from "../lib/schemas.js";
 import { rateLimit } from "express-rate-limit";
 
 const router = Router();

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import votingRoutes from "./voting.routes.ts";
-import paymentRoutes from "./payment.routes.ts";
-import withdrawalRoutes from "./withdrawal.routes.ts";
-import ussdRoutes from "./ussd.routes.ts";
-import adminRoutes from "./admin.routes.ts";
+import votingRoutes from "./voting.routes.js";
+import paymentRoutes from "./payment.routes.js";
+import withdrawalRoutes from "./withdrawal.routes.js";
+import ussdRoutes from "./ussd.routes.js";
+import adminRoutes from "./admin.routes.js";
 
 const router = Router();
 

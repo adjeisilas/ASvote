@@ -1,6 +1,6 @@
-import { supabase } from "../lib/supabase.ts";
+import { supabase } from "../lib/supabase.js";
 import crypto from "crypto";
-import { sendTicketEmail } from "../lib/email.ts";
+import { sendTicketEmail } from "../lib/email.js";
 
 export const processSuccessfulPayment = async (reference: string, voteData: any) => {
   // Check if transaction already exists to prevent double processing

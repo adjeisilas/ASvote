@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase.js";
 
 export const requestWithdrawal = async (req: Request, res: Response) => {
   const { uid, amount } = req.body;
