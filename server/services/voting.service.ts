@@ -55,8 +55,10 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
     .select();
 
   if (transError) {
-    console.error("Transaction insert error:", transError);
-    throw transError;
+    console.error(`[${reference}] Transaction insert error:`, transError);
+    // Log the actual payload that failed for easier debugging
+    console.log(`[${reference}] Failed payload:`, JSON.stringify(safeTxData));
+    throw new Error(`Database transaction recording failed: ${transError.message} (${transError.code || 'no code'})`);
   }
 
   const transactionRecord = transArr?.[0];
@@ -94,19 +96,15 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
         await supabase.from('ticket_tiers').select('name').eq('id', tierId).single() : 
         { data: null };
       
-      console.log(`Sending ticket email to ${voteData.voter_email} for event ${eventData?.title}...`);
+      // Send email without awaiting to speed up response
+      sendTicketEmail(
+        voteData.voter_email, 
+        eventData?.title || 'Unknown Event', 
+        tierData?.name, 
+        tickets
+      ).catch(err => console.error("Background email sending failure:", err));
       
-      try {
-        await sendTicketEmail(
-          voteData.voter_email, 
-          eventData?.title || 'Unknown Event', 
-          tierData?.name, 
-          tickets
-        );
-        console.log(`Email sent successfully to ${voteData.voter_email}`);
-      } catch (err) {
-        console.error("Critical email sending failure:", err);
-      }
+      console.log(`Email trigger initiated for ${voteData.voter_email}`);
 
       // Append tickets to record for response
       if (transactionRecord) {

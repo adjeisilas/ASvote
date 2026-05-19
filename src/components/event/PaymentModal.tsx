@@ -321,9 +321,9 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
           errResult = typeof detail === 'string' ? detail : JSON.stringify(detail || errResult);
         }
         
-        setErrorMessage(String(errResult));
+        setErrorMessage(typeof errResult === 'string' ? errResult : JSON.stringify(errResult));
         setPaymentStatus('error');
-        toast.error(errResult);
+        toast.error(typeof errResult === 'string' ? errResult : "Processing failed");
         setIsProcessing(false);
         // Rollback optimistic UI by refreshing data
         if (onVoteSuccess) onVoteSuccess();
@@ -332,20 +332,20 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
       console.error("Payment verification error:", error);
       
       const responseData = error.response?.data;
-      let msg = "An unexpected error occurred during verification";
+      let msg: any = "An unexpected error occurred during verification";
 
       if (typeof responseData === 'string') {
         msg = responseData;
       } else if (responseData && typeof responseData === 'object') {
-        const potential = responseData.message || responseData.details || responseData.error;
-        msg = typeof potential === 'string' ? potential : JSON.stringify(potential || responseData);
+        msg = responseData.message || responseData.details || responseData.error || responseData;
       } else {
         msg = error.message || msg;
       }
       
-      setErrorMessage(String(msg));
+      const finalMsg = typeof msg === 'string' ? msg : JSON.stringify(msg);
+      setErrorMessage(finalMsg);
       setPaymentStatus('error');
-      toast.error(`Verification error: ${String(msg)}`);
+      toast.error(`Verification error: ${finalMsg}`);
       setIsProcessing(false);
       // Rollback optimistic UI by refreshing data
       if (onVoteSuccess) onVoteSuccess();
@@ -592,7 +592,9 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
                     </h3>
                     <p className="text-sm font-medium text-muted-foreground mt-3 max-w-[250px] mx-auto leading-relaxed px-4">
                       {errorMessage ? (
-                        <span className="text-rose-500 font-bold block mb-2">Error: {errorMessage}</span>
+                        <div className="text-rose-500 font-bold block mb-2 break-words max-w-full">
+                          Error: {typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)}
+                        </div>
                       ) : (
                         <>If you've completed payment but see this, <span className="text-indigo-600 font-bold">don't worry</span>. Your vote is processing in the background. </>
                       )}

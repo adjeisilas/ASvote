@@ -17,54 +17,68 @@ export const recordVote = async (req: Request, res: Response) => {
 
   try {
     if (!reference) {
+      console.warn("Reference missing in request body");
       return res.status(400).json({ success: false, error: "Payment reference is required" });
     }
     // 1. Verify Payment with Paystack
-    console.log("Verifying payment with Paystack, ref:", reference);
-    const verifyRes = await verifyPaystackPayment(reference);
+    console.log(`[${reference}] Verifying payment with Paystack...`);
+    const verifyRes = await verifyPaystackPayment(reference).catch(e => {
+        console.error(`[${reference}] Paystack API crash:`, e.message);
+        throw e;
+    });
 
     if (!verifyRes || !verifyRes.status || !verifyRes.data || verifyRes.data.status !== "success") {
-      console.warn("Paystack verification fail:", verifyRes);
+      console.warn(`[${reference}] Paystack verification failed or non-success status:`, verifyRes?.data?.status);
       return res.status(400).json({ 
         success: false, 
         error: "Payment verification failed",
-        details: verifyRes ? verifyRes.message : "No response from Paystack"
+        details: verifyRes ? (verifyRes.message || "Status not success") : "No response from Paystack"
       });
     }
+
+    console.log(`[${reference}] Paystack confirmed success. Amount: ${verifyRes.data.amount / 100}`);
 
     // 2. Metadata Processing
     let finalVoteData = clientVoteData;
     const paystackMetadata = verifyRes.data.metadata;
     
     if (paystackMetadata && (paystackMetadata.voteData || paystackMetadata.custom_fields)) {
-      console.log("Found metadata in Paystack response");
+      console.log(`[${reference}] Using metadata from Paystack response`);
       const metaVoteData = paystackMetadata.voteData || paystackMetadata;
       finalVoteData = metaVoteData;
       if (typeof finalVoteData === 'string') {
-        try { finalVoteData = JSON.parse(finalVoteData); } catch (e) {
-          console.error("JSON parse error for Paystack metadata");
+        try { 
+          finalVoteData = JSON.parse(finalVoteData); 
+        } catch (e) {
+          console.error(`[${reference}] JSON parse error for Paystack metadata string:`, e);
         }
       }
     }
     
     if (!finalVoteData) {
-      console.error("Critical: No voteData found in request body or Paystack metadata");
+      console.error(`[${reference}] CRITICAL: No voteData found in request OR Paystack metadata`);
       return res.status(400).json({ success: false, error: "Missing vote data" });
     }
 
-    // Enforce numeric types for Zod
-    if (finalVoteData.votes !== undefined) finalVoteData.votes = Number(finalVoteData.votes);
-    if (finalVoteData.quantity !== undefined) finalVoteData.quantity = Number(finalVoteData.quantity);
-    if (finalVoteData.amount !== undefined) finalVoteData.amount = Number(finalVoteData.amount);
+    // Enforce numeric types and property mapping
+    const dataToValidate = { ...finalVoteData };
+    if (dataToValidate.votes !== undefined) dataToValidate.votes = Number(dataToValidate.votes);
+    if (dataToValidate.quantity !== undefined) dataToValidate.quantity = Number(dataToValidate.quantity);
+    if (dataToValidate.amount !== undefined) dataToValidate.amount = Number(dataToValidate.amount);
+    if (dataToValidate.commission !== undefined) dataToValidate.commission = Number(dataToValidate.commission);
+    if (dataToValidate.discount_applied !== undefined) dataToValidate.discount_applied = Number(dataToValidate.discount_applied);
 
     // 3. Validation
-    console.log("Validating with Zod...");
-    const validatedVoteData = await voteDataSchema.parseAsync(finalVoteData);
+    console.log(`[${reference}] Validating with Zod...`);
+    const validatedVoteData = await voteDataSchema.parseAsync(dataToValidate).catch(e => {
+        console.error(`[${reference}] Zod validation failed:`, e.errors || e.message);
+        throw e;
+    });
 
     // 4. Amount Verification
     const paidAmount = verifyRes.data.amount / 100;
     if (Math.abs(paidAmount - validatedVoteData.amount) > 0.05) {
-      console.warn("Payment amount mismatch:", { paid: paidAmount, expected: validatedVoteData.amount });
+      console.warn(`[${reference}] Amount mismatch: Paid ${paidAmount}, Expected ${validatedVoteData.amount}`);
       return res.status(400).json({ 
         success: false,
         error: "Amount mismatch check failed",
@@ -74,15 +88,18 @@ export const recordVote = async (req: Request, res: Response) => {
     }
 
     // 5. Success
-    console.log("Recording vote/ticket in database...");
-    const result = await processSuccessfulPayment(reference, validatedVoteData);
+    console.log(`[${reference}] Recording vote/ticket in database via voting.service...`);
+    const result = await processSuccessfulPayment(reference, validatedVoteData).catch(e => {
+        console.error(`[${reference}] processSuccessfulPayment CRASHED:`, e.message);
+        throw e;
+    });
     
     if (!result.success) {
-      console.error("Database recording failed:", result);
+      console.error(`[${reference}] Database recording logic returned failure:`, result);
       return res.status(400).json(result);
     }
 
-    console.log("Successfully recorded vote/ticket!");
+    console.log(`[${reference}] RECORDING SUCCESSFUL!`);
     return res.json(result);
   } catch (error: any) {
     console.error("Controller CRASH:", error);
