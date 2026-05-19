@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyPayment, handleWebhook } from "../controllers/payment.controller";
+import { verifyPayment, handleWebhook } from "../controllers/payment.controller.ts";
 import { rateLimit } from "express-rate-limit";
 
 const router = Router();

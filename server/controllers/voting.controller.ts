@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { verifyPaystackPayment } from "../services/payment.service";
-import { processSuccessfulPayment } from "../services/voting.service";
-import { voteDataSchema } from "../lib/schemas";
+import { verifyPaystackPayment } from "../services/payment.service.ts";
+import { processSuccessfulPayment } from "../services/voting.service.ts";
+import { voteDataSchema } from "../lib/schemas.ts";
 
 export const recordVote = async (req: Request, res: Response) => {
   console.log("recordVote controller started");

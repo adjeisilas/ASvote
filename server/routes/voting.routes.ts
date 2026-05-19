@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { recordVote } from "../controllers/voting.controller";
+import { recordVote } from "../controllers/voting.controller.ts";
 import { rateLimit } from "express-rate-limit";
-import { validate } from "../middleware/validate";
-import { recordVoteSchema } from "../lib/schemas";
+import { validate } from "../middleware/validate.ts";
+import { recordVoteSchema } from "../lib/schemas.ts";
 
 const router = Router();
 

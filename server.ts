@@ -6,7 +6,7 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import cluster from "node:cluster";
 import { availableParallelism } from "node:os";
-import app from "./server/app";
+import app from "./server/app.ts";
 
 const numCPUs = availableParallelism();
 

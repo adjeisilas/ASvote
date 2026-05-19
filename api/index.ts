@@ -1,4 +1,3 @@
-import app from "../server/app";
+import app from "../server/app.ts";
 
-// Vercel handles Express applications directly
 export default app;
