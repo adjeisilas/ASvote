@@ -4,9 +4,33 @@ import { initializePaystackCharge } from "../services/payment.service.js";
 
 export const handleUSSD = async (req: Request, res: Response) => {
   const sessionID = req.body.sessionID || req.body.sessionId;
-  const msisdn = req.body.msisdn || req.body.phoneNumber;
+  const rawMsisdn = req.body.msisdn || req.body.phoneNumber;
+  const msisdn = rawMsisdn ? rawMsisdn.replace('+', '') : null;
   const userDataRaw = req.body.userData || req.body.text || "";
-  const network = req.body.network || req.body.networkCode || 'mtn';
+  let rawNetwork = req.body.network || req.body.networkCode || '';
+  
+  // Normalize network for Paystack (mtn, vod, tgo)
+  let network = 'mtn';
+  if (!rawNetwork && msisdn) {
+    // Detect from msisdn if not provided (Ghana prefixes)
+    const normalized = msisdn.startsWith('233') ? msisdn.slice(3) : msisdn;
+    if (normalized.startsWith('020') || normalized.startsWith('20') || 
+        normalized.startsWith('050') || normalized.startsWith('50')) {
+      network = 'vod';
+    } else if (normalized.startsWith('027') || normalized.startsWith('27') || 
+               normalized.startsWith('057') || normalized.startsWith('57') || 
+               normalized.startsWith('026') || normalized.startsWith('26') || 
+               normalized.startsWith('056') || normalized.startsWith('56')) {
+      network = 'tgo';
+    } else {
+      network = 'mtn'; // Default to mtn
+    }
+  } else {
+    rawNetwork = rawNetwork.toLowerCase();
+    if (rawNetwork.includes('mtn')) network = 'mtn';
+    else if (rawNetwork.includes('vod') || rawNetwork.includes('telecel')) network = 'vod';
+    else if (rawNetwork.includes('tgo') || rawNetwork.includes('airtel') || rawNetwork.includes('tigo')) network = 'tgo';
+  }
 
   if (!sessionID || !msisdn) {
     console.error("USSD Error: Missing sessionID or MSISDN", req.body);
@@ -165,16 +189,17 @@ export const handleUSSD = async (req: Request, res: Response) => {
           if (userData === '1') {
             try {
               const paystackRes = await initializePaystackCharge({
-                email: `${session.msisdn}@asvote.ussd`,
+                email: `${msisdn}@asvote.ussd`,
                 amount: Math.round(session.total * 100),
+                currency: "GHS",
                 mobile_money: {
-                  phone: session.msisdn,
-                  provider: network || 'mtn'
+                  phone: msisdn,
+                  provider: network
                 },
                 metadata: {
                   ussd_session: sessionID,
                   voteData: {
-                    voter_email: `${session.msisdn}@asvote.ussd`,
+                    voter_email: `${msisdn}@asvote.ussd`,
                     event_id: session.eventId,
                     organizer_id: session.organizerId,
                     nominee_id: session.type === 'vote' ? session.nomineeId : session.tierId,
