@@ -315,12 +315,13 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
         console.warn('Server-side processing failed:', result);
         
         // Extract string message from potential error object
-        let errResult = result.error || "Payment processing failed.";
+        let errResult = result.error || result.message || "Payment processing failed.";
         if (typeof errResult !== 'string') {
-          errResult = errResult.message || errResult.details || JSON.stringify(errResult);
+          const detail = (errResult as any).message || (errResult as any).details;
+          errResult = typeof detail === 'string' ? detail : JSON.stringify(detail || errResult);
         }
         
-        setErrorMessage(errResult);
+        setErrorMessage(String(errResult));
         setPaymentStatus('error');
         toast.error(errResult);
         setIsProcessing(false);
@@ -336,14 +337,15 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
       if (typeof responseData === 'string') {
         msg = responseData;
       } else if (responseData && typeof responseData === 'object') {
-        msg = responseData.message || responseData.details || responseData.error || JSON.stringify(responseData);
+        const potential = responseData.message || responseData.details || responseData.error;
+        msg = typeof potential === 'string' ? potential : JSON.stringify(potential || responseData);
       } else {
         msg = error.message || msg;
       }
       
-      setErrorMessage(msg);
+      setErrorMessage(String(msg));
       setPaymentStatus('error');
-      toast.error(`Verification error: ${msg}`);
+      toast.error(`Verification error: ${String(msg)}`);
       setIsProcessing(false);
       // Rollback optimistic UI by refreshing data
       if (onVoteSuccess) onVoteSuccess();

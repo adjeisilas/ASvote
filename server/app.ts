@@ -16,6 +16,38 @@ app.get("/api/ping", (req, res) => {
   });
 });
 
+app.get("/api/db-status", async (req, res) => {
+  try {
+    const { supabase } = await import("./lib/supabase");
+    const { data, error } = await supabase.from('events').select('count', { count: 'exact', head: true });
+    
+    res.json({
+      status: error ? "error" : "success",
+      url_configured: !!process.env.SUPABASE_URL,
+      key_configured: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      connection: error ? "failed" : "ok",
+      error: error ? error.message : null,
+      details: error
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      status: "crash",
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+});
+
+app.get("/api/env-check", (req, res) => {
+  res.json({
+    supabase_url: !!process.env.SUPABASE_URL,
+    supabase_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    paystack_key: !!process.env.PAYSTACK_SECRET_KEY,
+    node_env: process.env.NODE_ENV,
+    vercel_env: process.env.VERCEL_ENV || "not detected"
+  });
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
