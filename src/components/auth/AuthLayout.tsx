@@ -16,10 +16,11 @@ export default function AuthLayout({ children, title, subtitle, type }: AuthLayo
       {/* Left Pane - Atmospheric & Branding */}
       <div className="hidden lg:flex flex-col lg:sticky lg:top-0 lg:h-screen relative overflow-hidden bg-slate-950 dark:bg-[#050505] border-r border-border">
         {/* Abstract Background Elements */}
-        <div className="absolute inset-0 z-0 text-white">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[120px] animate-pulse"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/10 blur-[120px]"></div>
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
+          {/* Texture Overlay - Using a subtle gradient instead of an external PNG to avoid 404s */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950 opacity-40"></div>
         </div>
 
         {/* Content */}
@@ -29,8 +30,9 @@ export default function AuthLayout({ children, title, subtitle, type }: AuthLayo
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link to="/" className="inline-flex items-center gap-3">
-              <div className="bg-white w-10 h-10 rounded-xl flex items-center justify-center text-slate-900 shadow-xl shadow-white/10 transform -rotate-6">
+            {/* LOGO SECTION - Change the Vote icon or span text here */}
+            <Link to="/" className="inline-flex items-center gap-3 group">
+              <div className="bg-white w-10 h-10 rounded-xl flex items-center justify-center text-slate-900 shadow-xl shadow-white/10 transform -rotate-6 group-hover:rotate-0 transition-transform duration-300">
                 <Vote size={24} />
               </div>
               <span className="text-xl font-black tracking-tighter text-white uppercase italic">ASVote</span>
@@ -97,8 +99,9 @@ export default function AuthLayout({ children, title, subtitle, type }: AuthLayo
       <div className="flex flex-col relative overflow-hidden bg-background">
         {/* Mobile Logo */}
         <div className="lg:hidden p-6 flex justify-center">
-           <Link to="/" className="inline-flex items-center gap-3">
-              <div className="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-primary-foreground shadow-xl transform -rotate-6">
+           {/* LOGO SECTION - Same as above for mobile */}
+           <Link to="/" className="inline-flex items-center gap-3 group">
+              <div className="bg-primary w-10 h-10 rounded-xl flex items-center justify-center text-primary-foreground shadow-xl transform -rotate-6 group-hover:rotate-0 transition-transform duration-300">
                 <Vote size={24} />
               </div>
               <span className="text-xl font-black tracking-tighter text-foreground uppercase italic">ASVote</span>
