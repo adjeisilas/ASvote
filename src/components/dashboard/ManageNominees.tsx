@@ -171,12 +171,6 @@ export default function ManageNominees() {
   };
 
   const handleAddNomineeSubmit = async () => {
-    console.log("Submitting nominee/option:", { 
-      name: nomineeFormData.name, 
-      activeCategoryId, 
-      eventId 
-    });
-
     if (!nomineeFormData.name) {
       toast.error("Please enter a name.");
       return;
@@ -225,8 +219,6 @@ export default function ManageNominees() {
         // Fallback
         code = `${prefix}${Math.floor(100 + Math.random() * 900).toString().slice(0, 3)}`;
       }
-      
-      console.log(`Generated code ${code} for category prefix ${prefix}`);
       
       const nomineeData = {
         name: nomineeFormData.name,

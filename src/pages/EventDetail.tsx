@@ -38,12 +38,10 @@ export default function EventDetail() {
       }
 
       const catsData = await databaseService.getCategories(id, eventData.type as any);
-      console.log("Event Categories:", catsData);
       setCategories(catsData);
 
       if (eventData.type === 'voting') {
         const nomsData = await databaseService.getNominees(id);
-        console.log("Event Nominees:", nomsData);
         setNominees(nomsData);
       } else {
         setNominees([]);
@@ -90,8 +88,6 @@ export default function EventDetail() {
   };
 
   const handleOptimisticVote = (voteCount: number, nomineeId: string) => {
-    console.log(`Optimistic update: Adding ${voteCount} votes to nominee ${nomineeId}`);
-    
     // Update local event total
     setEvent(prev => {
       if (!prev) return prev;

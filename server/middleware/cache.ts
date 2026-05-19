@@ -19,11 +19,8 @@ export const cacheMiddleware = (duration?: number) => {
     const cachedResponse = cache.get(key);
 
     if (cachedResponse) {
-      console.log(`Cache hit for ${key}`);
       return res.send(cachedResponse);
     }
-
-    console.log(`Cache miss for ${key}`);
 
     // Override res.send to store the response in cache
     const originalSend = res.send;

@@ -18,7 +18,6 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submission triggered");
     setIsSubmitting(true);
     
     // Immediate feedback that we are starting the process
@@ -55,7 +54,6 @@ export default function Contact() {
         publicKey
       );
       
-      console.log("EmailJS Success:", response.status, response.text);
       toast.dismiss(loadingToast);
       toast.success("Message launched! We'll be in touch soon.");
       setFormData({ name: '', email: '', subject: '', message: '' });

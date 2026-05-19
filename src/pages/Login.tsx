@@ -95,7 +95,7 @@ export default function Login() {
         const { error: insertError } = await supabase.from('profiles').insert([newProfile]);
         if (insertError) {
           if (insertError.code === '23505') {
-             console.log("Profile already exists.");
+             // Profile already exists
           } else if (insertError.code === '23503') {
             await new Promise(resolve => setTimeout(resolve, 1500));
             const { error: retryError } = await supabase.from('profiles').insert([newProfile]);

@@ -4,24 +4,15 @@ import { processSuccessfulPayment } from "../services/voting.service.js";
 import { voteDataSchema } from "../lib/schemas.js";
 
 export const recordVote = async (req: Request, res: Response) => {
-  console.log("recordVote controller started");
   const body = req.body || {};
   const { voteData: clientVoteData, reference } = body;
   
-  console.log("Request details:", { 
-    reference, 
-    hasVoteData: !!clientVoteData,
-    method: req.method,
-    headers: req.headers['content-type']
-  });
-
   try {
     if (!reference) {
       console.warn("Reference missing in request body");
       return res.status(400).json({ success: false, error: "Payment reference is required" });
     }
     // 1. Verify Payment with Paystack
-    console.log(`[${reference}] Verifying payment with Paystack...`);
     const verifyRes = await verifyPaystackPayment(reference).catch(e => {
         console.error(`[${reference}] Paystack API crash:`, e.message);
         throw e;
@@ -36,14 +27,11 @@ export const recordVote = async (req: Request, res: Response) => {
       });
     }
 
-    console.log(`[${reference}] Paystack confirmed success. Amount: ${verifyRes.data.amount / 100}`);
-
     // 2. Metadata Processing
     let finalVoteData = clientVoteData;
     const paystackMetadata = verifyRes.data.metadata;
     
     if (paystackMetadata && (paystackMetadata.voteData || paystackMetadata.custom_fields)) {
-      console.log(`[${reference}] Using metadata from Paystack response`);
       const metaVoteData = paystackMetadata.voteData || paystackMetadata;
       finalVoteData = metaVoteData;
       if (typeof finalVoteData === 'string') {
@@ -69,7 +57,6 @@ export const recordVote = async (req: Request, res: Response) => {
     if (dataToValidate.discount_applied !== undefined) dataToValidate.discount_applied = Number(dataToValidate.discount_applied);
 
     // 3. Validation
-    console.log(`[${reference}] Validating with Zod...`);
     const validatedVoteData = await voteDataSchema.parseAsync(dataToValidate).catch(e => {
         console.error(`[${reference}] Zod validation failed:`, e.errors || e.message);
         throw e;
@@ -88,7 +75,6 @@ export const recordVote = async (req: Request, res: Response) => {
     }
 
     // 5. Success
-    console.log(`[${reference}] Recording vote/ticket in database via voting.service...`);
     const result = await processSuccessfulPayment(reference, validatedVoteData).catch(e => {
         console.error(`[${reference}] processSuccessfulPayment CRASHED:`, e);
         throw e;
@@ -105,7 +91,6 @@ export const recordVote = async (req: Request, res: Response) => {
       });
     }
 
-    console.log(`[${reference}] RECORDING SUCCESSFUL!`);
     return res.json({
       success: true,
       message: "Payment verified and recorded successfully",

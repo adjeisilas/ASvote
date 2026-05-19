@@ -151,7 +151,7 @@ export default function CreateEvent() {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      console.log("Validation failed:", newErrors);
+      // Validation error occurred
     }
     return Object.keys(newErrors).length === 0;
   };

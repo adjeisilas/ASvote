@@ -46,7 +46,6 @@ export const handleWebhook = async (req: Request, res: Response) => {
         // Validate with Zod before processing
         const validatedVoteData = await voteDataSchema.parseAsync(metadata.voteData);
         await processSuccessfulPayment(reference, validatedVoteData);
-        console.log(`Webhook: Successfully processed ref ${reference}`);
       } catch (err: any) {
         console.error("Webhook processing/validation error:", err.message);
       }

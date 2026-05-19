@@ -60,7 +60,6 @@ export const sendTicketEmail = async (email: string, eventTitle: string, nominee
         </div>
       `,
     });
-    console.log(`Ticket email successfully sent to ${email} for event ${eventTitle}`);
   } catch (err) {
     console.error("Failed to send ticket email:", err);
   }

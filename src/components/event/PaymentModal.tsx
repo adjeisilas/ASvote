@@ -234,8 +234,6 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
     
     const paystackRef = response.reference || response.trxref || (typeof response === 'string' ? response : null);
     
-    console.log('Payment successful, verifying ref:', paystackRef);
-
     if (!paystackRef) {
       setPaymentStatus('error');
       toast.error("Invalid payment reference received.");
@@ -245,7 +243,6 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
 
     try {
       // 1. Record Vote via Secure Server Endpoint (Verifies & Records Atomically)
-      console.log('Requesting secure vote recording...');
       
       const voteData = {
         voter_email: email,
@@ -264,7 +261,6 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
 
       const result = await databaseService.recordVoteOnServer(voteData, paystackRef);
       
-      console.log('Server-side processing result:', result);
 
       if (result.success || result.error?.includes('already processed')) {
         const transactionId = result.transaction?.id;

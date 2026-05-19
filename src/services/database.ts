@@ -1049,7 +1049,6 @@ export const databaseService = {
   },
 
   async recordVoteOnServer(voteData: any, reference: string) {
-    console.log("DatabaseService: recording vote on server...", reference);
     const response = await axios.post('/api/votes/record', {
       voteData,
       reference

@@ -16,7 +16,6 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
   }
 
   if (existingTx) {
-    console.log(`Transaction ${reference} already processed.`);
     return { success: true, alreadyProcessed: true };
   }
 
@@ -57,7 +56,6 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
   if (transError) {
     console.error(`[${reference}] Transaction insert error:`, transError);
     // Log the actual payload that failed for easier debugging
-    console.log(`[${reference}] Failed payload:`, JSON.stringify(safeTxData));
     throw new Error(`Database transaction recording failed: ${transError.message} (${transError.code || 'no code'})`);
   }
 
@@ -104,8 +102,6 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
         tickets
       ).catch(err => console.error("Background email sending failure:", err));
       
-      console.log(`Email trigger initiated for ${voteData.voter_email}`);
-
       // Append tickets to record for response
       if (transactionRecord) {
         (transactionRecord as any).tickets = (createdTickets || []).map((t: any) => ({
@@ -128,7 +124,6 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
 
   } else if (!isTicketing && transactionId && voteData.event_id) {
     // For Voting
-    console.log("Recording vote transaction in DB...");
     const { error: voteTxErr } = await supabase
       .from('vote_transactions')
       .insert([{
@@ -145,7 +140,6 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
 
     // Increment Nominee and Event Votes
     const votesToIncrement = Number(voteData.votes || voteData.quantity || 1);
-    console.log(`Incrementing votes (${votesToIncrement}) via RPC for nominee: ${voteData.nominee_id} and event: ${voteData.event_id}`);
     
     try {
       if (voteData.nominee_id) {
