@@ -1,0 +1,6 @@
+{
+  "name": "ASVote",
+  "description": "ASVote is a trusted, secure platform for voting competitions and event ticketing, providing real-time results and seamless payment integrations for organizers and participants.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
