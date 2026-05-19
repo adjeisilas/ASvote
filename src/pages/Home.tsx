@@ -137,7 +137,7 @@ export default function Home() {
           <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-rose-500/10 rounded-full blur-[100px] opacity-40"></div>
           
           {/* Subtle Grid Pattern */}
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--border) 1px, transparent 0)', backgroundSize: '48px 48px' }}></div>
         </div>
 
