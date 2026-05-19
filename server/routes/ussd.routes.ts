@@ -15,6 +15,10 @@ const ussdLimiter = rateLimit({
   message: { error: "USSD session limit reached. Please wait a few minutes." }
 });
 
+router.get("/", (req, res) => {
+  res.send("CON USSD Service is running. Please use POST to interact with this endpoint.");
+});
+
 router.post("/", ussdLimiter, validate(ussdSchema), handleUSSD);
 
 export default router;
