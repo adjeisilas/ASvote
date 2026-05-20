@@ -62,6 +62,14 @@ function AppContent() {
   }
 
   useEffect(() => {
+    // If we have an active recovery session in sessionStorage, immediately force redirect to /reset-password
+    const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true';
+    const isAlreadyOnReset = window.location.pathname === '/reset-password';
+    if (isRecovering && !isAlreadyOnReset) {
+      navigate('/reset-password' + window.location.search + window.location.hash, { replace: true });
+      return;
+    }
+
     const checkRedirectParams = async () => {
       const hash = window.location.hash;
       const search = window.location.search;

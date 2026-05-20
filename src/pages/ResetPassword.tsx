@@ -40,7 +40,9 @@ export default function ResetPassword() {
 
     const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true' || 
                          window.location.hash.includes('type=recovery') || 
-                         window.location.search.includes('type=recovery');
+                         window.location.search.includes('type=recovery') ||
+                         window.location.search.includes('code=') ||
+                         window.location.hash.includes('access_token=');
 
     setLoading(true);
     try {
@@ -68,7 +70,9 @@ export default function ResetPassword() {
 
   const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true' || 
                        window.location.hash.includes('type=recovery') || 
-                       window.location.search.includes('type=recovery');
+                       window.location.search.includes('type=recovery') ||
+                       window.location.search.includes('code=') ||
+                       window.location.hash.includes('access_token=');
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-24 bg-white relative overflow-hidden">
