@@ -88,8 +88,8 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
     if (ticketError) {
       console.error("Error creating tickets:", ticketError);
     } else {
-      // Send email
-      const { data: eventData } = await supabase.from('events').select('title').eq('id', voteData.event_id).single();
+      // Fetch event and organizer detail
+      const { data: eventData } = await supabase.from('events').select('title, organizer_id').eq('id', voteData.event_id).single();
       const { data: tierData } = tierId ? 
         await supabase.from('ticket_tiers').select('name').eq('id', tierId).single() : 
         { data: null };
@@ -101,6 +101,20 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
         tierData?.name, 
         tickets
       ).catch(err => console.error("Background email sending failure:", err));
+
+      // Create a database notification for the organizer
+      const organizerId = eventData?.organizer_id || voteData.organizer_id;
+      if (organizerId) {
+        supabase.from('notifications').insert([{
+          user_id: organizerId,
+          title: 'New Tickets Sold! 🎟️',
+          message: `${voteData.recipient_name || 'A guest'} purchased ${ticketCount} ticket(s) (Tier: ${tierData?.name || 'General Entry'}) for your event "${eventData?.title || 'Unknown Event'}". Total: GHS ${safeTxData.amount}.`,
+          type: 'success',
+          read: false
+        }]).then(({ error }: { error: any }) => {
+          if (error) console.error("Error inserting ticket sold notification:", error);
+        });
+      }
       
       // Append tickets to record for response
       if (transactionRecord) {
@@ -138,8 +152,31 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
       // We don't throw here to ensure the transaction record is still returned
     }
 
-    // Increment Nominee and Event Votes
+    // Create a database notification for the organizer
     const votesToIncrement = Number(voteData.votes || voteData.quantity || 1);
+    try {
+      const { data: eventData } = await supabase.from('events').select('title, organizer_id').eq('id', voteData.event_id).single();
+      const { data: nomineeData } = voteData.nominee_id ? 
+        await supabase.from('nominees').select('name').eq('id', voteData.nominee_id).single() : 
+        { data: null };
+
+      const organizerId = eventData?.organizer_id || voteData.organizer_id;
+      if (organizerId) {
+        supabase.from('notifications').insert([{
+          user_id: organizerId,
+          title: 'New Votes Received! 🗳️',
+          message: `${votesToIncrement} vote(s) cast for nominee "${nomineeData?.name || 'Nominee'}" in your event "${eventData?.title || 'Unknown Event'}". Total: GHS ${safeTxData.amount}.`,
+          type: 'success',
+          read: false
+        }]).then(({ error }: { error: any }) => {
+          if (error) console.error("Error inserting vote cast notification:", error);
+        });
+      }
+    } catch (e) {
+      console.error("Error preparing notification for vote cast event:", e);
+    }
+
+    // Increment Nominee and Event Votes
     
     try {
       if (voteData.nominee_id) {

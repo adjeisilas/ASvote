@@ -16,14 +16,44 @@ export default function NotificationDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const isFirstLoad = useRef(true);
+
   useEffect(() => {
     if (!user) {
       setNotifications([]);
+      isFirstLoad.current = true;
       return;
     }
 
     const unsubscribe = notificationService.subscribeToNotifications(user.uid, (data) => {
-      setNotifications(data);
+      if (isFirstLoad.current) {
+        setNotifications(data);
+        isFirstLoad.current = false;
+        return;
+      }
+
+      setNotifications((prev) => {
+        const prevIds = new Set(prev.map(n => n.id));
+        const newUnreads = data.filter(n => !n.read && !prevIds.has(n.id));
+
+        newUnreads.forEach(n => {
+          switch (n.type) {
+            case 'success':
+              toast.success(n.title, { description: n.message, duration: 6000 });
+              break;
+            case 'error':
+              toast.error(n.title, { description: n.message, duration: 6000 });
+              break;
+            case 'warning':
+              toast.warning(n.title, { description: n.message, duration: 6000 });
+              break;
+            default:
+              toast.info(n.title, { description: n.message, duration: 6000 });
+          }
+        });
+
+        return data;
+      });
     });
 
     return () => unsubscribe();
@@ -142,8 +172,9 @@ export default function NotificationDropdown() {
               exit={{ opacity: 0, y: 12, scale: 0.96 }}
               transition={{ duration: 0.15 }}
               className={cn(
-                "bg-white dark:bg-slate-900 z-[999] overflow-hidden flex flex-col shadow-2xl border border-slate-150 dark:border-slate-800 rounded-2xl absolute right-0 mt-3",
-                "w-[calc(100vw-24px)] xs:w-[380px] max-h-[80vh] md:max-h-[550px] h-auto"
+                "bg-white dark:bg-slate-900 z-[999] overflow-hidden flex flex-col shadow-2xl border border-slate-150 dark:border-slate-800 rounded-2xl",
+                "fixed left-4 right-4 top-16 md:absolute md:left-auto md:right-0 md:top-full md:mt-3 md:w-[380px]",
+                "max-h-[calc(100vh-100px)] md:max-h-[550px] h-auto"
               )}
             >
               {/* Header */}

@@ -106,7 +106,7 @@ export default function App() {
       <AuthProvider>
         <Router>
           <AppContent />
-          <Toaster position="top-center" expand={true} richColors />
+          <Toaster position="top-right" expand={true} richColors />
         </Router>
       </AuthProvider>
     </ThemeProvider>
