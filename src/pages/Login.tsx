@@ -41,8 +41,14 @@ export default function Login() {
                            window.location.hash.includes('type=invite') || 
                            window.location.search.includes('type=invite');
 
-    if (isRecovery || isConfirmation) {
-      console.log("Skipping login page redirect: email/verification flow in progress");
+    if (isRecovery) {
+      sessionStorage.setItem('is_recovering_password', 'true');
+      navigate('/reset-password' + window.location.search + window.location.hash, { replace: true });
+      return;
+    }
+
+    if (isConfirmation) {
+      console.log("Skipping login page redirect: confirmation flow in progress");
       return;
     }
 
