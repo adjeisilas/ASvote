@@ -77,8 +77,12 @@ function AppContent() {
 
       // Handle Password Recovery flow
       if (type === 'recovery') {
-        toast.info("Password recovery link verified. Please define your new secure key.");
-        navigate('/reset-password', { replace: true });
+        const isAlreadyOnReset = window.location.pathname === '/reset-password';
+        if (!isAlreadyOnReset) {
+          toast.info("Password recovery link verified. Please define your new secure key.");
+          // Maintain original search and hash so that the Supabase client consumes them on the /reset-password route
+          navigate('/reset-password' + window.location.search + window.location.hash, { replace: true });
+        }
         return;
       }
 
@@ -88,7 +92,10 @@ function AppContent() {
         toast.success("Email confirmed successfully! You can now sign in with your credentials.", {
           duration: 10000,
         });
-        navigate('/login', { replace: true });
+        const isAlreadyOnLogin = window.location.pathname === '/login';
+        if (!isAlreadyOnLogin) {
+          navigate('/login' + window.location.search + window.location.hash, { replace: true });
+        }
         return;
       }
     };
