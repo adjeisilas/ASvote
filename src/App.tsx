@@ -68,7 +68,10 @@ function AppContent() {
       const errorMsg = hashParams.get('error_description') || searchParams.get('error_description');
 
       if (errorMsg) {
-        toast.error(decodeURIComponent(errorMsg).replace(/\+/g, ' '));
+        toast.error(decodeURIComponent(errorMsg).replace(/\+/g, ' '), {
+          duration: 8000
+        });
+        navigate('/login', { replace: true });
         return;
       }
 
