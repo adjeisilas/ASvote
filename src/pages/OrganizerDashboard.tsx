@@ -233,10 +233,10 @@ export default function OrganizerDashboard() {
               {/* Quick Stats Grid */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 {[
-                  { label: "Gross Sales", value: `${(stats.grossEarnings || 0).toLocaleString()} GHS`, icon: <Wallet className="text-blue-500" />, desc: "Total transaction value" },
-                  { label: "Commission Fee", value: `${(stats.totalCommissions || 0).toLocaleString()} GHS`, icon: <Activity className="text-rose-500" />, desc: "Platform processing fees" },
-                  { label: "Available Balance", value: `${availableBalance.toLocaleString()} GHS`, icon: <Wallet className="text-indigo-500" />, desc: "Ready for withdrawal", highlight: true },
-                  { label: "Total Net Earnings", value: `${stats.totalEarnings.toLocaleString()} GHS`, icon: <CheckCircle2 className="text-green-500" />, desc: "Balance + History" }
+                  { label: "Gross Sales", value: `${(stats.grossEarnings || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <Wallet className="text-blue-500" />, desc: "Total transaction value" },
+                  { label: "Commission Fee", value: `${(stats.totalCommissions || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <Activity className="text-rose-500" />, desc: "Platform processing fees" },
+                  { label: "Available Balance", value: `${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <Wallet className="text-indigo-500" />, desc: "Ready for withdrawal", highlight: true },
+                  { label: "Total Net Earnings", value: `${stats.totalEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <CheckCircle2 className="text-green-500" />, desc: "Balance + History" }
                 ].map((stat, i) => (
                   <Card key={i} className={cn("border-none shadow-sm hover:shadow-md transition-all duration-300 group", stat.highlight && "ring-2 ring-indigo-500/20")}>
                     <CardContent className="p-3 xs:p-4 md:p-6 flex flex-col gap-2 md:gap-4">

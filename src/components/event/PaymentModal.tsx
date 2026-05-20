@@ -263,12 +263,13 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
       
 
       if (result.success || result.error?.includes('already processed')) {
-        const transactionId = result.transaction?.id;
+        const transactionRecord = result.transaction || result.data;
+        const transactionId = transactionRecord?.id;
         
         if (event.type === 'ticketing' && transactionId) {
           try {
             // Priority 1: Use tickets returned directly from server response
-            let tickets = result.transaction?.tickets || [];
+            let tickets = transactionRecord?.tickets || [];
             
             // Priority 2: If server didn't include them (legacy or unexpected), or if it was already processed without returning them
             if (tickets.length === 0) {

@@ -177,8 +177,8 @@ export default function AdminDashboard() {
           targetUserId = withdrawalData.organizerId;
           title = status === 'approved' ? 'Withdrawal Approved!' : 'Withdrawal Update';
           message = status === 'approved'
-            ? `Your withdrawal request for GHS ${withdrawalData.amount.toLocaleString()} has been approved.`
-            : `Your withdrawal request for GHS ${withdrawalData.amount.toLocaleString()} was ${status}.`;
+            ? `Your withdrawal request for GHS ${withdrawalData.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} has been approved.`
+            : `Your withdrawal request for GHS ${withdrawalData.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} was ${status}.`;
           nType = status === 'approved' ? 'success' : status === 'rejected' ? 'error' : 'info';
         }
       }
@@ -362,8 +362,8 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-10">
               {[
                 { label: "Total Organizers", value: stats?.totalOrganizers || organizers.length, icon: <Users size={18} />, trend: "Verified Agents" },
-                { label: "Gross Volume", value: `${(stats?.totalVolume || 0).toLocaleString()} GHS`, icon: <Wallet size={18} />, trend: "Total Revenue" },
-                { label: "Platform Revenue", value: `${(stats?.totalCommissions || 0).toLocaleString()} GHS`, icon: <Activity size={18} />, trend: "Net Commission" },
+                { label: "Gross Volume", value: `${(stats?.totalVolume || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <Wallet size={18} />, trend: "Total Revenue" },
+                { label: "Platform Revenue", value: `${(stats?.totalCommissions || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <Activity size={18} />, trend: "Net Commission" },
                 { label: "Total Engagement", value: (stats?.totalVotes || 0).toLocaleString(), icon: <BarChart3 size={18} />, trend: "Votes/Tickets" }
               ].map((stat, i) => (
                 <Card key={i} className="border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
@@ -739,7 +739,7 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell className="font-mono font-bold text-indigo-500 text-xs md:text-sm whitespace-nowrap">
-                          {Number(w.amount).toLocaleString()} GHS
+                          {Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS
                         </TableCell>
                         <TableCell className="text-[10px] md:text-sm text-muted-foreground hidden md:table-cell">
                           {formatSafeDate(w.createdAt, 'MMM d, h:mm a')}

@@ -20,6 +20,10 @@ export const sendTicketEmail = async (email: string, eventTitle: string, nominee
   const resend = getResend();
   if (!resend) {
     console.warn("RESEND_API_KEY is missing. Email skipped.");
+    console.log(`[Ticket Email Simulation] To: ${email}
+Event: ${eventTitle}
+Tier: ${nomineeName || 'General'}
+Tickets:`, tickets.map((t, idx) => `\n  - Ticket #${idx + 1}: QR Code URL -> https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${t.qr_code || t.qrCode} (Code string: ${t.qr_code || t.qrCode})`).join(''));
     return;
   }
 

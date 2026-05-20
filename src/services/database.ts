@@ -402,6 +402,7 @@ export const databaseService = {
     if (updates.title) baseUpdates.title = updates.title;
     if (updates.description) baseUpdates.description = updates.description;
     if (updates.status) baseUpdates.status = updates.status;
+    if (updates.type) baseUpdates.type = updates.type;
     const coverImage = updates.coverImage || updates.cover_image;
     if (coverImage) baseUpdates.cover_image = coverImage;
     if (updates.tags) baseUpdates.tags = updates.tags;
@@ -416,11 +417,12 @@ export const databaseService = {
 
     // 2. Fetch current event to know type
     const { data: current } = await supabase.from('events').select('type').eq('id', eventId).single();
+    const targetType = updates.type || current?.type;
     
-    if (current?.type === 'voting') {
+    if (targetType === 'voting') {
       const voteUpdates: any = {};
-      const startDate = updates.startDate || updates.start_date;
-      const endDate = updates.endDate || updates.end_date;
+      const startDate = updates.startDate || updates.start_date || updates.event_date || updates.eventDate;
+      const endDate = updates.endDate || updates.end_date || updates.event_date || updates.eventDate;
       
       if (startDate) voteUpdates.start_date = startDate;
       if (endDate) voteUpdates.end_date = endDate;
@@ -428,22 +430,32 @@ export const databaseService = {
       if (updates.votingInstructions !== undefined) voteUpdates.voting_instructions = updates.votingInstructions;
       if (updates.multipleVotesEnabled !== undefined) voteUpdates.multiple_votes_enabled = updates.multipleVotesEnabled;
       
-      if (Object.keys(voteUpdates).length > 0) {
-        const { data: existing } = await supabase.from('voting_events').select('event_id').eq('event_id', eventId).maybeSingle();
-        if (existing) {
+      const { data: existing } = await supabase.from('voting_events').select('event_id').eq('event_id', eventId).maybeSingle();
+      if (existing) {
+        if (Object.keys(voteUpdates).length > 0) {
           await supabase.from('voting_events').update(voteUpdates).eq('event_id', eventId);
-        } else {
-          await supabase.from('voting_events').insert([{ event_id: eventId, ...voteUpdates }]);
         }
+      } else {
+        await supabase.from('voting_events').insert([{ 
+          event_id: eventId, 
+          start_date: startDate || new Date().toISOString(),
+          end_date: endDate || new Date(Date.now() + 7 * 24 * 3600000).toISOString(),
+          commission: updates.commission || 0,
+          voting_instructions: updates.votingInstructions || '',
+          multiple_votes_enabled: updates.multipleVotesEnabled !== undefined ? updates.multipleVotesEnabled : true
+        }]);
       }
-    } else if (current?.type === 'ticketing') {
+    } else if (targetType === 'ticketing') {
       const ticketUpdates: any = {};
       if (updates.venue !== undefined) ticketUpdates.venue = updates.venue;
       if (updates.doorsOpen !== undefined) ticketUpdates.doors_open = updates.doorsOpen;
       if (updates.eventTime !== undefined) ticketUpdates.event_time = updates.eventTime;
       if (updates.mainEventStart !== undefined) ticketUpdates.event_time = updates.mainEventStart;
       if (updates.expectedEnd !== undefined) ticketUpdates.expected_end = updates.expectedEnd;
-      if (updates.eventDate !== undefined) ticketUpdates.event_date = updates.eventDate;
+      
+      const eventDate = updates.eventDate || updates.event_date || updates.startDate || updates.start_date;
+      if (eventDate !== undefined) ticketUpdates.event_date = eventDate;
+      
       if (updates.organizerEmail !== undefined) ticketUpdates.organizer_email = updates.organizerEmail;
       if (updates.organizerPhone !== undefined) ticketUpdates.organizer_phone = updates.organizerPhone;
       if (updates.salesStart !== undefined) ticketUpdates.sales_start = updates.salesStart;
@@ -452,9 +464,9 @@ export const databaseService = {
       if (updates.maxTicketsPerUser !== undefined) ticketUpdates.max_tickets_per_user = updates.maxTicketsPerUser;
       if (updates.commission !== undefined) ticketUpdates.commission = updates.commission;
       
-      if (Object.keys(ticketUpdates).length > 0) {
-        const { data: existing } = await supabase.from('ticketing_events').select('event_id').eq('event_id', eventId).maybeSingle();
-        if (existing) {
+      const { data: existing } = await supabase.from('ticketing_events').select('event_id').eq('event_id', eventId).maybeSingle();
+      if (existing) {
+        if (Object.keys(ticketUpdates).length > 0) {
           const { error: updateError } = await supabase.from('ticketing_events').update(ticketUpdates).eq('event_id', eventId);
           if (updateError && updateError.message?.includes('expected_end')) {
             console.warn("expected_end column missing during update, retrying without it");
@@ -463,15 +475,29 @@ export const databaseService = {
           } else if (updateError) {
             throw updateError;
           }
-        } else {
-          // If for some reason it's missing, we need to insert.
-          // venue is NOT NULL, so we provide a default if it's missing from updates.
-          const insertPayload = { 
-            event_id: eventId, 
-            venue: ticketUpdates.venue || 'TBD', // Guarantee venue present
-            ...ticketUpdates 
-          };
-          await supabase.from('ticketing_events').insert([insertPayload]);
+        }
+      } else {
+        const insertPayload = { 
+          event_id: eventId, 
+          venue: ticketUpdates.venue || updates.venue || 'TBD',
+          doors_open: ticketUpdates.doors_open || '',
+          event_time: ticketUpdates.event_time || '18:00',
+          expected_end: ticketUpdates.expected_end || '22:00',
+          event_date: ticketUpdates.event_date || new Date().toISOString().split('T')[0],
+          organizer_email: ticketUpdates.organizer_email || '',
+          organizer_phone: ticketUpdates.organizer_phone || '',
+          sales_start: ticketUpdates.sales_start || null,
+          sales_end: ticketUpdates.sales_end || null,
+          refund_policy: ticketUpdates.refund_policy || '',
+          max_tickets_per_user: ticketUpdates.max_tickets_per_user || 10,
+          commission: ticketUpdates.commission || 0
+        };
+        const { error: insertError } = await supabase.from('ticketing_events').insert([insertPayload]);
+        if (insertError && insertError.message?.includes('expected_end')) {
+          const { expected_end, ...fallbackInsert } = insertPayload;
+          await supabase.from('ticketing_events').insert([fallbackInsert]);
+        } else if (insertError) {
+          throw insertError;
         }
       }
     }
@@ -1129,11 +1155,11 @@ export const databaseService = {
         approvedCount,
         pendingCount,
         rejectedCount,
-        totalEarnings: Math.floor(totalEarnings),
-        grossEarnings: Math.floor(grossEarnings),
-        totalCommissions: Math.floor(totalCommissions),
-        pendingPayouts: Math.floor(pendingPayouts),
-        completedPayouts: Math.floor(completedPayouts),
+        totalEarnings: Number(totalEarnings.toFixed(2)),
+        grossEarnings: Number(grossEarnings.toFixed(2)),
+        totalCommissions: Number(totalCommissions.toFixed(2)),
+        pendingPayouts: Number(pendingPayouts.toFixed(2)),
+        completedPayouts: Number(completedPayouts.toFixed(2)),
         totalCategories,
         totalNominees,
         pendingCountRaw: pendingCount
@@ -1195,10 +1221,10 @@ export const databaseService = {
         totalOrganizers: organizersCount,
         totalEvents: events.length,
         activeEvents: events.filter(e => e.status === 'active').length,
-        totalVolume: Math.floor(totalVolume),
-        totalCommissions: Math.floor(totalCommissions),
-        totalPendingPayouts: Math.floor(totalPendingPayouts),
-        totalCompletedPayouts: Math.floor(totalCompletedPayouts),
+        totalVolume: Number(totalVolume.toFixed(2)),
+        totalCommissions: Number(totalCommissions.toFixed(2)),
+        totalPendingPayouts: Number(totalPendingPayouts.toFixed(2)),
+        totalCompletedPayouts: Number(totalCompletedPayouts.toFixed(2)),
         totalVotes: transactions.reduce((acc, t) => {
           const count = Number((t as any).quantity) || 
                        (t.type === 'vote' ? 
