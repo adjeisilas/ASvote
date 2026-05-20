@@ -3,10 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import * as Sentry from "@sentry/react";
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { supabase } from './lib/supabase';
+import { toast } from 'sonner';
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -45,10 +48,62 @@ import ScrollToTop from './components/layout/ScrollToTop';
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isDashboard = location.pathname.startsWith('/admin') || location.pathname.startsWith('/organizer');
   const isAuthPage = ['/login', '/register', '/forgot-password'].includes(location.pathname);
   const hideNavbar = isDashboard;
   const hideFooter = isDashboard || isAuthPage;
+
+  useEffect(() => {
+    const checkRedirectParams = async () => {
+      const hash = window.location.hash;
+      const search = window.location.search;
+
+      // Extract details from hash (like #access_token=...&type=recovery)
+      const hashParams = new URLSearchParams(hash.replace('#', '?'));
+      const searchParams = new URLSearchParams(search);
+
+      const type = hashParams.get('type') || searchParams.get('type');
+      const hashToken = hashParams.get('access_token');
+      const errorMsg = hashParams.get('error_description') || searchParams.get('error_description');
+
+      if (errorMsg) {
+        toast.error(decodeURIComponent(errorMsg).replace(/\+/g, ' '));
+        return;
+      }
+
+      // Handle Password Recovery flow
+      if (type === 'recovery') {
+        toast.info("Password recovery link verified. Please define your new secure key.");
+        navigate('/reset-password', { replace: true });
+        return;
+      }
+
+      // Handle SignUp / Email Confirmation / Invite flows
+      if (type === 'signup' || type === 'invite' || type === 'email_change' || type === 'email_change_current' || type === 'email_change_new') {
+        await supabase.auth.signOut().catch(() => {});
+        toast.success("Email confirmed successfully! You can now sign in with your credentials.", {
+          duration: 10000,
+        });
+        navigate('/login', { replace: true });
+        return;
+      }
+    };
+
+    checkRedirectParams();
+
+    // Listen to active Supabase session event changes (e.g., password recovery sessions)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        toast.info("Password recovery session verified. Redirecting to reset page...");
+        navigate('/reset-password', { replace: true });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300">
