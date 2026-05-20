@@ -38,6 +38,10 @@ export default function ResetPassword() {
       return;
     }
 
+    const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true' || 
+                         window.location.hash.includes('type=recovery') || 
+                         window.location.search.includes('type=recovery');
+
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
@@ -45,6 +49,7 @@ export default function ResetPassword() {
       
       // Force sign out to clear transient recovery session and require fresh sign in
       await supabase.auth.signOut().catch(() => {});
+      sessionStorage.removeItem('is_recovering_password');
       
       setIsSuccess(true);
       toast.success("Password updated successfully! Please sign in with your new key.");
@@ -61,6 +66,10 @@ export default function ResetPassword() {
     }
   };
 
+  const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true' || 
+                       window.location.hash.includes('type=recovery') || 
+                       window.location.search.includes('type=recovery');
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-24 bg-white relative overflow-hidden">
       {/* Background Decor */}
@@ -72,16 +81,33 @@ export default function ResetPassword() {
             <Vote size={32} />
           </div>
           <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2">
-            {isSuccess ? "Password Updated" : "Set New Key"}
+            {!isRecovering ? "Access Denied" : isSuccess ? "Password Updated" : "Set New Key"}
           </h1>
           <p className="text-slate-500 font-medium italic">
-            {isSuccess ? "Your access has been restored" : "Define your new professional standard key"}
+            {!isRecovering ? "Secure authentication barrier active" : isSuccess ? "Your access has been restored" : "Define your new professional standard key"}
           </p>
         </div>
-
+ 
         <Card className="shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] border-slate-100 rounded-[3rem] overflow-hidden bg-white/80 backdrop-blur-xl">
           <CardContent className="p-10 lg:p-14">
-            {isSuccess ? (
+            {!isRecovering ? (
+              <div className="text-center space-y-8">
+                <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mx-auto text-rose-500 animate-in zoom-in duration-500">
+                  <ShieldCheck size={40} className="stroke-2" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Recovery Key Required</h3>
+                <p className="text-slate-600 font-medium leading-relaxed">
+                  You cannot access the key reset page directly. Please use the "Forgot Key" function to request a secure recovery link.
+                </p>
+                <div className="pt-4">
+                  <Link to="/forgot-password">
+                    <Button className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-2xl shadow-xl transition-all">
+                      REQUEST NEW LINK
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : isSuccess ? (
               <div className="text-center space-y-8">
                 <div className="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mx-auto text-green-500 animate-in zoom-in duration-500">
                   <CheckCircle2 size={40} />
@@ -137,6 +163,20 @@ export default function ResetPassword() {
                     {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <ShieldCheck className="w-5 h-5 mr-2" />}
                     {loading ? 'SECURING KEY...' : 'UPDATE PASSWORD'}
                   </Button>
+                </div>
+
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await supabase.auth.signOut().catch(() => {});
+                      sessionStorage.removeItem('is_recovering_password');
+                      navigate('/login', { replace: true });
+                    }}
+                    className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors"
+                  >
+                    Cancel and Sign Out
+                  </button>
                 </div>
               </form>
             )}

@@ -68,13 +68,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     let subscription: any = null;
     try {
-      const result = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const result = supabase.auth.onAuthStateChange(async (event, session) => {
         setSupabaseUser(session?.user ?? null);
+        if (event === 'PASSWORD_RECOVERY') {
+          sessionStorage.setItem('is_recovering_password', 'true');
+        }
         if (session?.user) {
           fetchProfile(session.user.id);
         } else {
           setUser(null);
           setLoading(false);
+          sessionStorage.removeItem('is_recovering_password');
         }
       });
       subscription = result.data?.subscription;

@@ -77,6 +77,7 @@ function AppContent() {
 
       // Handle Password Recovery flow
       if (type === 'recovery') {
+        sessionStorage.setItem('is_recovering_password', 'true');
         const isAlreadyOnReset = window.location.pathname === '/reset-password';
         if (!isAlreadyOnReset) {
           toast.info("Password recovery link verified. Please define your new secure key.");

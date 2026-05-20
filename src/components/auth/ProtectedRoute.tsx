@@ -12,6 +12,12 @@ export default function ProtectedRoute({ children, role }: ProtectedRouteProps) 
   const { user, loading } = useAuth();
   const location = useLocation();
 
+  const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true';
+
+  if (isRecovering) {
+    return <Navigate to="/reset-password" replace />;
+  }
+
   if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-slate-50">

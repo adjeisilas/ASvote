@@ -23,6 +23,13 @@ export default function Login() {
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
+    // Force redirection to /reset-password if in recovery flow
+    const isRecovering = sessionStorage.getItem('is_recovering_password') === 'true';
+    if (isRecovering) {
+      navigate('/reset-password', { replace: true });
+      return;
+    }
+
     // Check if we are currently handling an email recovery or verification flow
     const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
     const searchParams = new URLSearchParams(window.location.search);
