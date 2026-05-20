@@ -43,12 +43,15 @@ export default function ResetPassword() {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       
+      // Force sign out to clear transient recovery session and require fresh sign in
+      await supabase.auth.signOut().catch(() => {});
+      
       setIsSuccess(true);
-      toast.success("Password updated successfully!");
+      toast.success("Password updated successfully! Please sign in with your new key.");
       
       // Delay navigation to show success state
       setTimeout(() => {
-        navigate('/login');
+        navigate('/login', { replace: true });
       }, 3000);
     } catch (error: any) {
       console.error("Error updating password:", error);

@@ -22,8 +22,23 @@ export default function Login() {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
 
-  // ... (auto-redirect logic remains the same)
   useEffect(() => {
+    // Check if we are currently handling an email recovery or verification flow
+    const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+    const searchParams = new URLSearchParams(window.location.search);
+    const type = hashParams.get('type') || searchParams.get('type');
+    const isRecovery = type === 'recovery' || window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery');
+    const isConfirmation = ['signup', 'invite', 'email_change', 'email_change_current', 'email_change_new'].includes(type || '') || 
+                           window.location.hash.includes('type=signup') || 
+                           window.location.search.includes('type=signup') ||
+                           window.location.hash.includes('type=invite') || 
+                           window.location.search.includes('type=invite');
+
+    if (isRecovery || isConfirmation) {
+      console.log("Skipping login page redirect: email/verification flow in progress");
+      return;
+    }
+
     if (!authLoading && user) {
       if (user.role === 'organizer' && user.status !== 'approved') {
         return;
