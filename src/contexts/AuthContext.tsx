@@ -46,6 +46,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    // Synchronously check URL hash/search for recovery flow
+    const hash = window.location.hash;
+    const search = window.location.search;
+    if (hash.includes('type=recovery') || search.includes('type=recovery')) {
+      sessionStorage.setItem('is_recovering_password', 'true');
+    }
+
     // Initial session check
     const checkSession = async () => {
       try {
@@ -78,7 +85,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setUser(null);
           setLoading(false);
-          sessionStorage.removeItem('is_recovering_password');
         }
       });
       subscription = result.data?.subscription;

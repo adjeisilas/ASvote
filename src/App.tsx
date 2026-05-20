@@ -54,6 +54,13 @@ function AppContent() {
   const hideNavbar = isDashboard;
   const hideFooter = isDashboard || isAuthPage;
 
+  // Synchronously flag as recovering password on mount before Supabase of router transitions can clear the URL hash/search
+  const hash = window.location.hash;
+  const search = window.location.search;
+  if (hash.includes('type=recovery') || search.includes('type=recovery')) {
+    sessionStorage.setItem('is_recovering_password', 'true');
+  }
+
   useEffect(() => {
     const checkRedirectParams = async () => {
       const hash = window.location.hash;
@@ -106,6 +113,7 @@ function AppContent() {
     // Listen to active Supabase session event changes (e.g., password recovery sessions)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
+        sessionStorage.setItem('is_recovering_password', 'true');
         toast.info("Password recovery session verified. Redirecting to reset page...");
         navigate('/reset-password', { replace: true });
       }
