@@ -93,6 +93,7 @@ const AppWithNoSSR = dynamic(
     loading: () => (
       <div className="flex items-center justify-center min-h-screen bg-slate-950 text-slate-100 font-sans">
         <div className="flex flex-col items-center gap-4">
+          {/* Custom blue spinner loading state */}
           <div className="w-10 h-10 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin"></div>
         </div>
       </div>
