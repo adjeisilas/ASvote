@@ -5,5 +5,4 @@ coverage/
 .DS_Store
 *.log
 .env*
-.env.example
-supabase_schema.sql
+!.env.example

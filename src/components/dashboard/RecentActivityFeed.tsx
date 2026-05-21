@@ -9,7 +9,7 @@ import {
   Clock,
   ChevronRight
 } from 'lucide-react';
-import { cn, formatSafeDistanceToNow } from '../../lib/utils';
+import { cn, formatSafeDistanceToNow, slugify } from '../../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { useNavigate } from 'react-router-dom';
 
@@ -68,7 +68,7 @@ export default function RecentActivityFeed({ activities }: RecentActivityFeedPro
     if (type === 'event_created') {
       navigate(`/admin/organizer/${details.organizerId}`);
     } else if (type === 'large_payment') {
-      navigate(`/event/${details.id}`);
+      navigate(`/event/${slugify(details.event || '')}`);
     } else if (type === 'withdrawal_request') {
       navigate(`/admin/organizer/${details.id}`);
     }

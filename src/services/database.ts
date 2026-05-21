@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { Event, Withdrawal, Notification, User as AppUser, Transaction, Category, Nominee, ActivityLog } from '../types';
 import axios from '../lib/axios';
+import { slugify } from '../lib/utils';
 
 const CACHE_DURATION = 30000; // 30 seconds
 const cache: {
@@ -186,10 +187,27 @@ export const databaseService = {
     };
   },
 
-  async getEventById(id: string): Promise<Event & { categories: any[] }> {
+  async getEventById(slugOrId: string): Promise<Event & { categories: any[] }> {
     // Check cache
-    if (cache.eventDetails[id] && (Date.now() - cache.eventDetails[id].timestamp < CACHE_DURATION)) {
-      return cache.eventDetails[id].data;
+    if (cache.eventDetails[slugOrId] && (Date.now() - cache.eventDetails[slugOrId].timestamp < CACHE_DURATION)) {
+      return cache.eventDetails[slugOrId].data;
+    }
+
+    let id = slugOrId;
+    const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(slugOrId);
+
+    if (!isUUID) {
+      // Find event by slugified title
+      const { data: allEvents, error: slugError } = await supabase
+        .from('events')
+        .select('id, title');
+      
+      if (!slugError && allEvents) {
+        const matched = allEvents.find(e => slugify(e.title) === slugOrId);
+        if (matched) {
+          id = matched.id;
+        }
+      }
     }
 
     const { data, error } = await supabase

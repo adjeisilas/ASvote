@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { Html5Qrcode } from 'html5-qrcode';
+
 import { cn } from '../../lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 
@@ -32,10 +32,11 @@ export default function GlobalTicketScanner() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   useEffect(() => {
-    let html5QrCode: Html5Qrcode | null = null;
+    let html5QrCode: any = null;
     
     const startScanner = async () => {
       try {
+        const { Html5Qrcode } = await import('html5-qrcode');
         html5QrCode = new Html5Qrcode("global-qr-reader");
         const qrCodeSuccessCallback = (decodedText: string) => {
           setSearchQuery(decodedText);

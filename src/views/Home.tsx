@@ -7,7 +7,7 @@ import { Badge } from '../components/ui/badge';
 import { Calendar, Users, ArrowRight, Timer, Vote, Shield, Zap, BarChart, Globe, CheckCircle2, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { cn, formatSafeDistanceToNow } from '../lib/utils';
+import { cn, formatSafeDistanceToNow, slugify } from '../lib/utils';
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -223,7 +223,7 @@ export default function Home() {
                             </div>
                           </div>
                         ) : (
-                          <Link to={`/event/${featuredEvent.id}`}>
+                          <Link to={`/event/${slugify(featuredEvent.title)}`}>
                             <div className="bg-card p-5 rounded-[3rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] border border-border relative overflow-hidden transition-all duration-700 h-full flex flex-col group-hover:shadow-[0_80px_160px_-40px_rgba(79,70,229,0.15)] group-hover:-translate-y-2">
                                <div className="relative flex-1 overflow-hidden rounded-[2.2rem]">
                                 <img 
@@ -410,7 +410,7 @@ export default function Home() {
                        </div>
                     </div>
                     
-                    <Link to={`/event/${event.id}`} className="w-full mt-auto">
+                    <Link to={`/event/${slugify(event.title)}`} className="w-full mt-auto">
                       <Button variant="outline" className="w-full h-10 border-2 border-border hover:border-blue-600 hover:bg-blue-600 hover:text-white text-foreground font-bold rounded-xl transition-all group/btn flex items-center justify-center gap-2 uppercase text-[10px] tracking-widest bg-transparent">
                         {event.endDate && new Date(event.endDate) < new Date() ? 'VIEW RESULTS' : (event.type === 'voting' ? 'VOTE' : 'TICKETS')} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                       </Button>

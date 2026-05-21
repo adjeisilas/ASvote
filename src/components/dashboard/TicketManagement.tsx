@@ -9,7 +9,7 @@ import { Search, QrCode, CheckCircle2, XCircle, Loader2, Calendar, Mail, User, C
 import { toast } from 'sonner';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 
 export default function TicketManagement() {
@@ -39,22 +39,27 @@ export default function TicketManagement() {
   }, [eventId]);
 
   useEffect(() => {
-    let scanner: Html5QrcodeScanner | null = null;
+    let scanner: any = null;
     if (isScannerOpen) {
-      setTimeout(() => {
-        scanner = new Html5QrcodeScanner(
-          "qr-reader",
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          false
-        );
-        scanner.render((result) => {
-          setSearchQuery(result);
-          setIsScannerOpen(false);
-          scanner?.clear();
-          toast.success("Code scanned successfully!");
-        }, (error) => {
-          // ignore
-        });
+      setTimeout(async () => {
+        try {
+          const { Html5QrcodeScanner } = await import('html5-qrcode');
+          scanner = new Html5QrcodeScanner(
+            "qr-reader",
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            false
+          );
+          scanner.render((result) => {
+            setSearchQuery(result);
+            setIsScannerOpen(false);
+            scanner?.clear();
+            toast.success("Code scanned successfully!");
+          }, (error) => {
+            // ignore
+          });
+        } catch (err) {
+          console.error("Failed to load scanner:", err);
+        }
       }, 300);
     }
     return () => {

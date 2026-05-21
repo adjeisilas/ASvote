@@ -8,7 +8,7 @@ import { Calendar, Users, ArrowRight, Vote, Search, Filter, SlidersHorizontal, T
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
-import { cn } from '../lib/utils';
+import { cn, slugify } from '../lib/utils';
 
 export default function Events() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -207,7 +207,7 @@ export default function Events() {
                          </div>
                       </div>
                       
-                      <Link to={`/event/${event.id}`} className="w-full mt-auto">
+                      <Link to={`/event/${slugify(event.title)}`} className="w-full mt-auto">
                         <Button variant="outline" className="w-full h-10 border-2 border-border hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-foreground font-bold rounded-xl transition-all group/btn flex items-center justify-center gap-2 uppercase text-[10px] tracking-widest bg-transparent">
                           {event.type === 'voting' ? 'VOTE' : 'TICKETS'} <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                         </Button>

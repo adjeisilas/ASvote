@@ -37,11 +37,11 @@ export default function EventDetail() {
         return;
       }
 
-      const catsData = await databaseService.getCategories(id, eventData.type as any);
+      const catsData = await databaseService.getCategories(eventData.id, eventData.type as any);
       setCategories(catsData);
 
       if (eventData.type === 'voting') {
-        const nomsData = await databaseService.getNominees(id);
+        const nomsData = await databaseService.getNominees(eventData.id);
         setNominees(nomsData);
       } else {
         setNominees([]);
@@ -60,19 +60,23 @@ export default function EventDetail() {
   useEffect(() => {
     fetchData();
     setActiveTab(undefined);
+  }, [id, navigate]);
 
-    if (!id) return;
+  useEffect(() => {
+    if (!event?.id) return;
 
-    const eventSub = supabase.channel(`event-${id}`)
+    const realEventId = event.id;
+
+    const eventSub = supabase.channel(`event-${realEventId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, (payload) => {
-        if ((payload.new as any)?.id === id) fetchData();
+        if ((payload.new as any)?.id === realEventId) fetchData();
       })
       .subscribe();
 
-    const nomsSub = supabase.channel(`noms-${id}`)
+    const nomsSub = supabase.channel(`noms-${realEventId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'nominees' }, (payload) => {
         const row = (payload.new || payload.old) as any;
-        if (row?.event_id === id) fetchData();
+        if (row?.event_id === realEventId) fetchData();
       })
       .subscribe();
 
@@ -80,7 +84,7 @@ export default function EventDetail() {
       supabase.removeChannel(eventSub);
       supabase.removeChannel(nomsSub);
     };
-  }, [id, navigate]);
+  }, [event?.id]);
 
   const handleVoteClick = (nominee: Nominee) => {
     setSelectedNominee(nominee);

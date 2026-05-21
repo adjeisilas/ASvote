@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trophy, Medal, Crown, TrendingUp, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
-import { cn } from '../../lib/utils';
+import { cn, slugify } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
 interface Performer {
@@ -22,7 +22,7 @@ export default function TopPerformersLeaderboard({ topEvents, topOrganizers }: T
   const handleNavigate = (item: Performer, type: 'event' | 'organizer') => {
     if (!item.id) return;
     if (type === 'event') {
-      navigate(`/event/${item.id}`);
+      navigate(`/event/${slugify(item.name)}`);
     } else {
       navigate(`/admin/organizer/${item.id}`);
     }

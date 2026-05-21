@@ -13,7 +13,7 @@ import { Input } from '../components/ui/input';
 import { Users, LayoutGrid, Wallet, BarChart3, CheckCircle, Search, Loader2, Activity, Eye, Trash2, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { cn, formatSafeDate, formatSafeDistanceToNow } from '../lib/utils';
+import { cn, formatSafeDate, formatSafeDistanceToNow, slugify } from '../lib/utils';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import UserSettings from '../components/dashboard/UserSettings';
 import VotingTrendChart from '../components/dashboard/VotingTrendChart';
@@ -686,10 +686,20 @@ export default function AdminDashboard() {
                                   variant="ghost" 
                                   size="icon" 
                                   className="h-7 w-7 md:h-8 md:w-8 text-muted-foreground hover:text-indigo-500 hover:bg-accent transition-colors hidden sm:flex" 
-                                  onClick={() => navigate(`/event/${event.id}`)}
+                                  onClick={() => navigate(`/event/${slugify(event.title)}`)}
                                   title="Public View"
                                 >
                                   <Eye size={14} />
+                                </Button>
+
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-7 w-7 md:h-8 md:w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors" 
+                                  onClick={() => setDeleteConfirm({ id: event.id, name: event.title || 'Unnamed Event', type: 'event' })}
+                                  title="Delete Event"
+                                >
+                                  <Trash2 size={14} />
                                 </Button>
                               </div>
                            </TableCell>

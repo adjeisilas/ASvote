@@ -165,7 +165,7 @@ export const processSuccessfulPayment = async (reference: string, voteData: any)
         supabase.from('notifications').insert([{
           user_id: organizerId,
           title: 'New Votes Received! 🗳️',
-          message: `${votesToIncrement} vote(s) cast for nominee "${nomineeData?.name || 'Nominee'}" in your event "${eventData?.title || 'Unknown Event'}". Total: GHS ${safeTxData.amount}.`,
+          message: `${voteData.recipient_name || 'A voter'} cast ${votesToIncrement} vote(s) for nominee "${nomineeData?.name || 'Nominee'}" in your event "${eventData?.title || 'Unknown Event'}". Total: GHS ${safeTxData.amount}.`,
           type: 'success',
           read: false
         }]).then(({ error }: { error: any }) => {

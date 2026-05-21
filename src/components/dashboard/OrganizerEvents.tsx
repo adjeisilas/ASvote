@@ -28,6 +28,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ConfirmationDialog } from '../ui/confirmation-dialog';
+import { slugify } from '../../lib/utils';
 
 export default function OrganizerEvents() {
   const { user } = useAuth();
@@ -273,7 +274,7 @@ export default function OrganizerEvents() {
                               variant="outline" 
                               size="sm" 
                               className="h-8 px-2 border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 transition-all font-bold" 
-                              onClick={() => navigate(`/event/${event.id}`)}
+                              onClick={() => navigate(`/event/${slugify(event.title)}`)}
                             >
                               <Eye size={14} className="mr-1.5" />
                               <span className="text-[10px]">Preview</span>
@@ -423,7 +424,7 @@ export default function OrganizerEvents() {
                         variant="outline" 
                         size="sm" 
                         className="h-9 w-full border-slate-200 font-bold text-[11px] gap-2" 
-                        onClick={() => navigate(`/event/${event.id}`)}
+                        onClick={() => navigate(`/event/${slugify(event.title)}`)}
                       >
                         <Eye size={14} className="text-slate-400" />
                         Preview

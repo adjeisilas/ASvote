@@ -21,7 +21,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
-import { cn, formatSafeDate } from '../lib/utils';
+import { cn, formatSafeDate, slugify } from '../lib/utils';
 import { toast } from 'sonner';
 
 export default function AdminOrganizerDetail() {
@@ -227,7 +227,7 @@ export default function AdminOrganizerDetail() {
                               variant="ghost" 
                               size="icon" 
                               className="h-7 w-7 md:h-8 md:w-8 text-slate-400 hover:text-indigo-600"
-                              onClick={() => navigate(`/event/${event.id}`)}
+                              onClick={() => navigate(`/event/${slugify(event.title)}`)}
                             >
                               <ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5" />
                             </Button>

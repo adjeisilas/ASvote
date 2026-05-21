@@ -4,7 +4,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Nominee, Event, Category } from '../../types';
-import PaystackPop from '@paystack/inline-js';
+import { slugify } from '../../lib/utils';
+
 import { toast } from 'sonner';
 import { databaseService } from '../../services/database';
 import axios from 'axios';
@@ -223,7 +224,7 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
     return () => clearTimeout(timer);
   }, [paymentStatus]);
 
-  const handleSuccess = async (response: any) => {
+  const handleSuccess = async (response: any, overrideVoteData?: any) => {
     setIsProcessing(true);
     setPaymentStatus('verifying');
 
@@ -244,7 +245,7 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
     try {
       // 1. Record Vote via Secure Server Endpoint (Verifies & Records Atomically)
       
-      const voteData = {
+      const voteData = overrideVoteData || {
         voter_email: email,
         event_id: event.id,
         organizer_id: event.organizerId,
@@ -353,31 +354,69 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
     onClose();
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      toast.error("Please enter your email address.");
-      return;
+    
+    const isTicketing = event.type === 'ticketing';
+    const cleanEmail = email.trim();
+    const cleanName = recipientName.trim();
+
+    if (isTicketing) {
+      if (!cleanEmail) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
+      if (!cleanName) {
+        toast.error("Please enter the recipient name.");
+        return;
+      }
+    } else {
+      if (!cleanName) {
+        toast.error("Please enter your receipt name.");
+        return;
+      }
     }
-    if (voteCount < 1) {
-      toast.error("Please enter at least 1 vote.");
-      return;
-    }
+
+    const effectiveName = cleanName;
+    const effectiveEmail = isTicketing 
+      ? cleanEmail 
+      : `${slugify(cleanName)}@asvote.com`;
+
+    // Immediately update states for consistency
+    setEmail(effectiveEmail);
+    setRecipientName(effectiveName);
+
+    const voteDataToUse = {
+      voter_email: effectiveEmail,
+      event_id: event.id,
+      organizer_id: event.organizerId,
+      commission: event.commission || 0,
+      category_id: nominee?.categoryId || (nominee as any)?.category_id || null,
+      nominee_id: nominee?.id || null,
+      amount: finalTotal,
+      votes: voteCount,
+      discount_applied: discount,
+      promo_code_id: appliedPromo?.id || null,
+      recipient_name: effectiveName || null,
+      type: isTicketing ? 'ticket' : 'vote'
+    };
     
     try {
+      const PaystackPopModule = await import('@paystack/inline-js');
+      const PaystackPop = PaystackPopModule.default || (PaystackPopModule as any);
       const paystack = new PaystackPop();
       paystack.newTransaction({
-        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '',
-        email: email,
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || process.env.VITE_PAYSTACK_PUBLIC_KEY || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_PAYSTACK_PUBLIC_KEY) || '',
+        email: effectiveEmail,
         amount: Math.round(finalTotal * 100),
         currency: 'GHS',
         reference: (new Date()).getTime().toString(),
         metadata: {
           custom_fields: [],
-          voteData: voteDataForMetadata
+          voteData: voteDataToUse
         } as any,
         onSuccess: (transaction: any) => {
-          handleSuccess(transaction);
+          handleSuccess(transaction, voteDataToUse);
         },
         onCancel: () => {
           handleClose();
@@ -628,17 +667,34 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Receipt Email</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="Enter email for ticket" 
-                      required 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-11 rounded-xl border-border bg-accent/50 focus:bg-background transition-all font-bold shadow-none text-xs"
-                    />
+                  <div className="space-y-1.5 text-left flex flex-col items-start w-full">
+                    {event.type === 'ticketing' ? (
+                      <>
+                        <Label htmlFor="email" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Receipt Email</Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          placeholder="Enter email for ticket" 
+                          required 
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="h-11 rounded-xl border-border bg-accent/50 focus:bg-background transition-all font-bold shadow-none text-xs w-full"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Label htmlFor="recipientName" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Receipt Name</Label>
+                        <Input 
+                          id="recipientName" 
+                          type="text" 
+                          placeholder="Enter name for receipt" 
+                          required 
+                          value={recipientName}
+                          onChange={(e) => setRecipientName(e.target.value)}
+                          className="h-11 rounded-xl border-border bg-accent/50 focus:bg-background transition-all font-bold shadow-none text-xs w-full"
+                        />
+                      </>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
