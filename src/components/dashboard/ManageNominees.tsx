@@ -285,7 +285,7 @@ export default function ManageNominees() {
       
       <div className="flex flex-col gap-4 mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold">{isTicketing ? 'Manage Tickets' : 'Manage Content'}</h1>
-        <div className="flex flex-col gap-3 w-full bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+        <div className="flex flex-col gap-3 w-full bg-card p-4 rounded-xl border border-border shadow-sm">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-grow">
               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1 block">
@@ -374,24 +374,24 @@ export default function ManageNominees() {
               {isTicketing ? (
                 <div className="space-y-4">
                   {cat.description && (
-                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 italic text-slate-500 text-sm">
+                    <div className="bg-muted/30 p-4 rounded-xl border border-border italic text-muted-foreground text-sm">
                       "{cat.description}"
                     </div>
                   )}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                     <div className="p-3 bg-white border border-slate-100 rounded-lg">
-                        <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Status</p>
-                        <p className="text-xs font-bold text-slate-900">
+                     <div className="p-3 bg-card border border-border rounded-lg">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Status</p>
+                        <p className="text-xs font-bold text-foreground">
                           {(cat.soldCount ?? 0) >= (cat.capacity ?? 0) ? 'Sold Out' : 'Active'}
                         </p>
                      </div>
-                     <div className="p-3 bg-white border border-slate-100 rounded-lg">
-                        <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Inventory</p>
-                        <p className="text-xs font-bold text-slate-900">{cat.capacity} Total</p>
+                     <div className="p-3 bg-card border border-border rounded-lg">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Inventory</p>
+                        <p className="text-xs font-bold text-foreground">{cat.capacity} Total</p>
                      </div>
-                     <div className="p-3 bg-white border border-slate-100 rounded-lg">
-                        <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Price</p>
-                        <p className="text-xs font-bold text-slate-900">{cat.price} GHS</p>
+                     <div className="p-3 bg-card border border-border rounded-lg">
+                        <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Price</p>
+                        <p className="text-xs font-bold text-foreground">{cat.price} GHS</p>
                      </div>
                   </div>
                 </div>
@@ -540,11 +540,11 @@ export default function ManageNominees() {
               ) : (
                 <Label 
                   htmlFor="nomineeImageInput" 
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-muted/30 transition-colors bg-card"
                 >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-8 h-8 mb-2 text-slate-400" />
-                    <p className="text-xs text-slate-500">Click to upload photo</p>
+                    <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">Click to upload photo</p>
                   </div>
                   <input 
                     id="nomineeImageInput" 

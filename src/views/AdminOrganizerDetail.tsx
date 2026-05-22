@@ -189,7 +189,7 @@ export default function AdminOrganizerDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Events List */}
           <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="bg-white border-b border-slate-50">
+            <CardHeader className="bg-card border-b border-border">
               <div className="flex items-center gap-2">
                 <Activity className="text-indigo-600" size={18} />
                 <CardTitle className="text-lg">Event History</CardTitle>
@@ -199,7 +199,7 @@ export default function AdminOrganizerDetail() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-slate-50/50">
+                  <TableHeader className="bg-muted/30">
                     <TableRow>
                       <TableHead className="min-w-[150px]">Event</TableHead>
                       <TableHead>Type</TableHead>
@@ -268,7 +268,7 @@ export default function AdminOrganizerDetail() {
 
           {/* Withdrawals List */}
           <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="bg-white border-b border-slate-50">
+            <CardHeader className="bg-card border-b border-border">
               <div className="flex items-center gap-2">
                 <Wallet className="text-emerald-600" size={18} />
                 <CardTitle className="text-lg">Payout History</CardTitle>
@@ -278,7 +278,7 @@ export default function AdminOrganizerDetail() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-slate-50/50">
+                  <TableHeader className="bg-muted/30">
                     <TableRow>
                       <TableHead className="min-w-[120px]">Date</TableHead>
                       <TableHead>Momo Recipient</TableHead>

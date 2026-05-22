@@ -105,14 +105,14 @@ export default function TicketManagement() {
                 </Button>
               }
             />
-            <DialogContent className="sm:max-w-md bg-white">
+            <DialogContent className="sm:max-w-md bg-background border-border text-foreground">
               <DialogHeader>
                 <DialogTitle>Scan Ticket QR Code</DialogTitle>
                 <DialogDescription>
                   Align the guest's QR code within the frame to verify it automatically.
                 </DialogDescription>
               </DialogHeader>
-              <div id="qr-reader" className="w-full overflow-hidden rounded-2xl border-2 border-slate-100 bg-slate-50 min-h-[300px]" />
+              <div id="qr-reader" className="w-full overflow-hidden rounded-2xl border-2 border-border bg-muted/30 min-h-[300px]" />
               <div className="mt-4 flex justify-center">
                  <Button variant="secondary" onClick={() => setIsScannerOpen(false)} className="rounded-xl">
                    Cancel Scanning
@@ -137,18 +137,18 @@ export default function TicketManagement() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-slate-300">
-          <Loader2 className="w-10 h-10 animate-spin mb-4" />
-          <p className="font-bold text-slate-400">Loading tickets...</p>
+        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+          <Loader2 className="w-10 h-10 animate-spin mb-4 text-indigo-500" />
+          <p className="font-bold text-muted-foreground">Loading tickets...</p>
         </div>
       ) : filteredTickets.length === 0 ? (
-        <Card className="border-dashed border-2 border-slate-200 bg-slate-50/50 shadow-none">
+        <Card className="border-dashed border-2 border-border bg-muted/10 shadow-none">
           <CardContent className="py-20 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-300 mb-4">
+            <div className="w-16 h-16 rounded-3xl bg-muted flex items-center justify-center text-muted-foreground mb-4">
               <QrCode size={32} />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">No Tickets Found</h3>
-            <p className="text-slate-500 text-sm max-w-xs mt-1">
+            <h3 className="text-lg font-bold text-foreground">No Tickets Found</h3>
+            <p className="text-muted-foreground text-sm max-w-xs mt-1">
               Either no tickets have been sold yet or your search didn't match any record.
             </p>
           </CardContent>
@@ -161,15 +161,15 @@ export default function TicketManagement() {
                 "h-2 w-full",
                 ticket.checkedIn ? "bg-emerald-500" : "bg-indigo-500"
               )} />
-              <CardContent className="p-6">
+               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">QR CODE</p>
-                    <p className="text-lg font-black text-slate-900 font-mono">{ticket.qrCode}</p>
+                    <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">QR CODE</p>
+                    <p className="text-lg font-black text-foreground font-mono">{ticket.qrCode}</p>
                   </div>
                   <Badge className={cn(
                     "rounded-full px-3 py-1 font-bold text-[9px] uppercase tracking-widest border-none",
-                    ticket.checkedIn ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"
+                    ticket.checkedIn ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
                   )}>
                     {ticket.checkedIn ? 'CHECKED IN' : 'VALID'}
                   </Badge>
@@ -177,56 +177,56 @@ export default function TicketManagement() {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
                       <QrCode size={14} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Ticket Tier</p>
-                      <p className="text-xs font-bold text-slate-900">{ticket.tierName || 'Standard'}</p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">Ticket Tier</p>
+                      <p className="text-xs font-bold text-foreground">{ticket.tierName || 'Standard'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
                       <Mail size={14} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Purchased By</p>
-                      <p className="text-xs font-bold text-slate-900 truncate max-w-[150px]">{ticket.voterEmail || 'Anonymous'}</p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">Purchased By</p>
+                      <p className="text-xs font-bold text-foreground truncate max-w-[150px]">{ticket.voterEmail || 'Anonymous'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
                       <Calendar size={14} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Purchase Date</p>
-                      <p className="text-xs font-bold text-slate-900">{format(new Date(ticket.createdAt), 'MMM d, yyyy • HH:mm')}</p>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase">Purchase Date</p>
+                      <p className="text-xs font-bold text-foreground">{format(new Date(ticket.createdAt), 'MMM d, yyyy • HH:mm')}</p>
                     </div>
                   </div>
 
                   {ticket.checkedIn && (
                     <div className="flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                         <Clock size={14} />
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold text-emerald-600 uppercase">Check-in Time</p>
-                        <p className="text-xs font-bold text-emerald-700">{format(new Date(ticket.checkedInAt), 'HH:mm:ss')}</p>
+                        <p className="text-[9px] font-bold text-emerald-500 uppercase">Check-in Time</p>
+                        <p className="text-xs font-bold text-foreground">{format(new Date(ticket.checkedInAt), 'HH:mm:ss')}</p>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-50">
+                <div className="mt-8 pt-6 border-t border-border">
                   {ticket.checkedIn ? (
-                    <div className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-50 text-emerald-700 rounded-2xl font-bold text-xs">
+                    <div className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-500/10 text-emerald-400 rounded-2xl font-bold text-xs">
                       <CheckCircle2 size={16} /> Verified & Admitted
                     </div>
                   ) : (
                     <Button 
-                      className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-[10px] tracking-widest shadow-lg shadow-indigo-100"
+                      className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-[10px] tracking-widest shadow-none"
                       onClick={() => handleCheckIn(ticket.id)}
                       disabled={isCheckingIn === ticket.id}
                     >

@@ -201,17 +201,17 @@ export default function OrganizerWithdrawals() {
           <CardDescription>Withdraw your earnings to your bank account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Available Balance</p>
-             <p className="text-3xl font-black text-slate-900">{availableBalance.toLocaleString()} GHS</p>
-             <div className="flex gap-4 mt-3 pt-3 border-t border-slate-200/50">
+          <div className="mb-6 p-4 bg-muted/30 rounded-2xl border border-border">
+             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Available Balance</p>
+             <p className="text-3xl font-black text-foreground">{availableBalance.toLocaleString()} GHS</p>
+             <div className="flex gap-4 mt-3 pt-3 border-t border-border/50">
                 <div>
-                   <p className="text-[9px] font-bold text-slate-400 uppercase">Min</p>
-                   <p className="text-xs font-bold text-slate-600">100 GHS</p>
+                   <p className="text-[9px] font-bold text-muted-foreground uppercase">Min</p>
+                   <p className="text-xs font-bold text-muted-foreground">100 GHS</p>
                 </div>
                 <div>
-                   <p className="text-[9px] font-bold text-slate-400 uppercase">Max</p>
-                   <p className="text-xs font-bold text-slate-600">30,000 GHS</p>
+                   <p className="text-[9px] font-bold text-muted-foreground uppercase">Max</p>
+                   <p className="text-xs font-bold text-muted-foreground">30,000 GHS</p>
                 </div>
              </div>
           </div>
@@ -295,9 +295,9 @@ export default function OrganizerWithdrawals() {
           <CardTitle>Withdrawal History</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto font-sans">
             <Table>
-              <TableHeader className="bg-slate-50/50">
+              <TableHeader className="bg-muted/30">
                 <TableRow>
                   <TableHead className="min-w-[150px]">Date</TableHead>
                   <TableHead>Momo Recipient</TableHead>
@@ -308,25 +308,25 @@ export default function OrganizerWithdrawals() {
               <TableBody>
                 {fetching ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-10">Loading...</TableCell>
+                    <TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Loading...</TableCell>
                   </TableRow>
                 ) : withdrawals.length > 0 ? (
                   withdrawals.map((w) => (
                     <TableRow key={w.id}>
-                      <TableCell className="text-[11px] md:text-sm text-slate-500 whitespace-nowrap">
+                      <TableCell className="text-[11px] md:text-sm text-muted-foreground whitespace-nowrap">
                         {formatSafeDate(w.createdAt, 'MMM d, yyyy HH:mm')}
                       </TableCell>
-                      <TableCell className="text-[11px] md:text-sm text-slate-700 whitespace-nowrap">
+                      <TableCell className="text-[11px] md:text-sm text-muted-foreground whitespace-nowrap">
                         {w.momoNumber ? (
                           <div className="flex flex-col">
-                            <span className="font-mono font-bold text-slate-900">{w.momoNumber}</span>
-                            <span className="text-[10px] text-slate-400 font-sans">{w.momoName}</span>
+                            <span className="font-mono font-bold text-foreground">{w.momoNumber}</span>
+                            <span className="text-[10px] text-muted-foreground font-sans">{w.momoName}</span>
                           </div>
                         ) : (
-                          <span className="italic text-slate-400 text-xs">Self (Profile Phone)</span>
+                          <span className="italic text-muted-foreground text-xs">Self (Profile Phone)</span>
                         )}
                       </TableCell>
-                      <TableCell className="font-bold text-slate-900 text-[11px] md:text-sm whitespace-nowrap">{w.amount.toLocaleString()} GHS</TableCell>
+                      <TableCell className="font-bold text-foreground text-[11px] md:text-sm whitespace-nowrap">{w.amount.toLocaleString()} GHS</TableCell>
                       <TableCell>
                         <Badge className={`${statusMap[w.status]?.color || 'bg-slate-100'} border-none capitalize flex items-center w-fit text-[10px] md:text-xs px-2 py-0.5`}>
                           {statusMap[w.status]?.icon}

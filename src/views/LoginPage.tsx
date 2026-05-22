@@ -57,29 +57,29 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
-      <Card className="w-full max-w-md border-none shadow-xl shadow-slate-200/50 dark:shadow-none bg-white rounded-3xl overflow-hidden p-6 md:p-8">
+      <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-2">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
             <ShieldCheck size={28} />
           </div>
-          <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">Welcome Back</CardTitle>
-          <CardDescription className="text-slate-500 text-sm">
+          <CardTitle className="text-2xl font-black text-foreground tracking-tight">Welcome Back</CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
             Sign in to manage your events, ticket orders, or tournament polls.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Email Address</Label>
+              <Label htmlFor="email" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Email Address</Label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Mail size={16} />
                 </span>
                 <Input
                   id="email"
                   type="email"
                   placeholder="organizer@asvote.com"
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                  className="pl-10 h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -90,23 +90,23 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="password" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Password</Label>
+                <Label htmlFor="password" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Password</Label>
                 <Link
                   to="/forgot-password"
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
+                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:underline"
                 >
                   Forgot Key?
                 </Link>
               </div>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <KeyRound size={16} />
                 </span>
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••••••"
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                  className="pl-10 h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}

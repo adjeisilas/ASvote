@@ -59,8 +59,8 @@ export default function EventAnalytics() {
           <ArrowLeft size={14} />
         </Button>
         <div className="min-w-0">
-          <h2 className="text-lg md:text-xl font-bold text-slate-900 truncate">{event.title} Analytics</h2>
-          <p className="text-[10px] md:text-xs text-slate-500 font-medium">Performance breakdown</p>
+          <h2 className="text-lg md:text-xl font-bold text-foreground truncate">{event.title} Analytics</h2>
+          <p className="text-[10px] md:text-xs text-muted-foreground font-medium">Performance breakdown</p>
         </div>
       </div>
 
@@ -72,10 +72,10 @@ export default function EventAnalytics() {
                 <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <div>
-                <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   {event.type === 'ticketing' ? 'Total Tickets' : 'Total Votes'}
                 </p>
-                <p className="text-xl md:text-2xl font-black text-slate-900">{event.totalVotes?.toLocaleString() || 0}</p>
+                <p className="text-xl md:text-2xl font-black text-foreground">{event.totalVotes?.toLocaleString() || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -88,10 +88,10 @@ export default function EventAnalytics() {
                 <Users className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <div>
-                <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   {event.type === 'ticketing' ? 'Total Issued' : 'Nominees'}
                 </p>
-                <p className="text-xl md:text-2xl font-black text-slate-900">
+                <p className="text-xl md:text-2xl font-black text-foreground font-sans">
                   {(event as any).categories?.reduce((acc: number, cat: any) => acc + (cat.nominees?.length || 0), 0) || 0}
                 </p>
               </div>
@@ -106,28 +106,28 @@ export default function EventAnalytics() {
                 <Target className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <div>
-                <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   {event.type === 'ticketing' ? 'Ticket Tiers' : 'Categories'}
                 </p>
-                <p className="text-xl md:text-2xl font-black text-slate-900">{(event as any).categories?.length || 0}</p>
+                <p className="text-xl md:text-2xl font-black text-foreground">{(event as any).categories?.length || 0}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {event.type === 'ticketing' && (
-          <Card className="border-none shadow-sm overflow-hidden bg-emerald-50/50">
+          <Card className="border-none shadow-sm overflow-hidden bg-emerald-500/10 dark:bg-emerald-500/5">
             <CardContent className="p-4 md:p-6">
               <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
                   <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <p className="text-[10px] md:text-xs font-bold text-emerald-600 uppercase tracking-wider">Check-in Rate</p>
-                  <p className="text-xl md:text-2xl font-black text-emerald-900">
+                  <p className="text-[10px] md:text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Check-in Rate</p>
+                  <p className="text-xl md:text-2xl font-black text-foreground font-sans">
                     {tickets.length > 0 ? Math.round((tickets.filter(t => t.checkedIn).length / tickets.length) * 100) : 0}%
                   </p>
-                  <p className="text-[9px] text-emerald-600/60 font-medium">
+                  <p className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70 font-medium">
                     {tickets.filter(t => t.checkedIn).length} of {tickets.length} arrived
                   </p>
                 </div>
@@ -157,21 +157,21 @@ export default function EventAnalytics() {
           </CardHeader>
           <CardContent className="px-4 md:px-6 pb-4 md:pb-6">
             <div className="space-y-3 md:space-y-4">
-              {(event as any).categories?.flatMap((cat: any) => cat.nominees || [])
+               {(event as any).categories?.flatMap((cat: any) => cat.nominees || [])
                 .sort((a: any, b: any) => (b.voteCount || 0) - (a.voteCount || 0))
                 .slice(0, 5)
                 .map((nominee: any, i: number) => (
-                  <div key={nominee.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div key={nominee.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border">
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-[10px] md:text-xs font-black text-slate-300">#{i + 1}</span>
+                      <span className="text-[10px] md:text-xs font-black text-muted-foreground">#{i + 1}</span>
                       <div className="min-w-0">
-                        <p className="text-xs md:text-sm font-bold text-slate-800 truncate">{nominee.name}</p>
-                        <p className="text-[9px] md:text-[10px] text-slate-400 font-medium truncate">{(event as any).categories?.find((c: any) => c.id === nominee.categoryId)?.name}</p>
+                        <p className="text-xs md:text-sm font-bold text-foreground truncate">{nominee.name}</p>
+                        <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium truncate">{(event as any).categories?.find((c: any) => c.id === nominee.categoryId)?.name}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-xs md:text-sm font-black text-slate-900">{nominee.voteCount?.toLocaleString() || 0}</p>
-                      <p className="text-[9px] md:text-[10px] text-slate-400 font-medium uppercase">
+                      <p className="text-xs md:text-sm font-black text-foreground">{nominee.voteCount?.toLocaleString() || 0}</p>
+                      <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium uppercase">
                         {event.type === 'ticketing' ? 'Sold' : 'Votes'}
                       </p>
                     </div>

@@ -121,41 +121,41 @@ export default function GlobalTicketScanner() {
   return (
     <div className="max-w-3xl mx-auto space-y-4 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 px-2 sm:px-4">
       <div className="text-center space-y-1 md:space-y-2">
-        <h1 className="text-xl xs:text-2xl md:text-4xl font-black text-slate-900 tracking-tight">Entry Scanner</h1>
-        <p className="text-slate-500 text-[11px] md:text-sm">Verify guest tickets instantly via camera or manual code entry.</p>
+        <h1 className="text-xl xs:text-2xl md:text-4xl font-black text-foreground tracking-tight">Entry Scanner</h1>
+        <p className="text-muted-foreground text-[11px] md:text-sm">Verify guest tickets instantly via camera or manual code entry.</p>
       </div>
 
-      <Card className="border-none shadow-xl shadow-indigo-100/50 rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-white">
+      <Card className="border-none shadow-xl rounded-2xl md:rounded-[2.5rem] overflow-hidden bg-card text-card-foreground">
         <CardContent className="p-4 xs:p-6 md:p-12">
           <div className="flex flex-col gap-4 md:gap-6">
             <div className="flex gap-2 md:gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
+                <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 md:w-5 md:h-5" />
                 <Input 
                   placeholder="Enter ticket code..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="pl-9 md:pl-12 h-11 md:h-14 rounded-xl md:rounded-2xl border-slate-100 bg-slate-50 text-xs md:text-lg font-mono font-bold tracking-wider md:tracking-widest focus:ring-indigo-500 focus:bg-white transition-all shadow-inner"
+                  className="pl-9 md:pl-12 h-11 md:h-14 rounded-xl md:rounded-2xl border-border bg-muted/40 text-xs md:text-lg font-mono font-bold tracking-wider md:tracking-widest focus:ring-indigo-500 focus:bg-card text-foreground transition-all shadow-inner"
                 />
               </div>
               
               <Dialog open={isScannerOpen} onOpenChange={setIsScannerOpen}>
                 <DialogTrigger
                   render={
-                    <Button className="h-11 w-11 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-100 shrink-0 flex items-center justify-center p-0">
+                    <Button className="h-11 w-11 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-none shrink-0 flex items-center justify-center p-0">
                       <Camera className="w-4 h-4 md:w-6 md:h-6" />
                     </Button>
                   }
                 />
-                <DialogContent className="sm:max-w-md bg-white">
+                <DialogContent className="sm:max-w-md bg-background border-border text-foreground">
                   <DialogHeader>
                     <DialogTitle>Camera Scanner</DialogTitle>
                     <DialogDescription>
                       Point your camera at the guest's ticket QR code.
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="relative w-full aspect-square overflow-hidden rounded-2xl border-2 border-slate-100 bg-black">
+                  <div className="relative w-full aspect-square overflow-hidden rounded-2xl border-2 border-border bg-black">
                     <div id="global-qr-reader" className="w-full h-full" />
                     <div className="absolute inset-0 pointer-events-none border-[40px] border-black/40 border-dashed opacity-50" />
                   </div>
@@ -180,18 +180,18 @@ export default function GlobalTicketScanner() {
 
           <div className="mt-6 md:mt-12">
             {!scannedTicket && !loading && (
-              <div className="py-10 md:py-20 border-2 border-dashed border-slate-100 rounded-2xl md:rounded-[2rem] flex flex-col items-center justify-center text-slate-300">
-                <div className="w-12 h-12 md:w-20 md:h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 md:mb-6">
+              <div className="py-10 md:py-20 border-2 border-dashed border-border rounded-2xl md:rounded-[2rem] flex flex-col items-center justify-center text-muted-foreground">
+                <div className="w-12 h-12 md:w-20 md:h-20 bg-muted rounded-full flex items-center justify-center mb-4 md:mb-6">
                   <QrCode className="w-6 h-6 md:w-10 md:h-10 opacity-30" />
                 </div>
-                <p className="text-xs md:text-sm font-bold text-slate-400">Ready to scan guest ticket</p>
-                <p className="text-[9px] md:text-[10px] uppercase tracking-widest mt-1 text-slate-300">Enter a code or use the camera</p>
+                <p className="text-xs md:text-sm font-bold text-muted-foreground">Ready to scan guest ticket</p>
+                <p className="text-[9px] md:text-[10px] uppercase tracking-widest mt-1 text-muted-foreground">Enter a code or use the camera</p>
               </div>
             )}
 
             {loading && (
               <div className="py-10 md:py-20 flex flex-col items-center justify-center space-y-4">
-                <div className="w-10 h-10 md:w-16 md:h-16 rounded-full border-4 border-slate-100 border-t-indigo-600 animate-spin" />
+                <div className="w-10 h-10 md:w-16 md:h-16 rounded-full border-4 border-border border-t-indigo-600 animate-spin" />
                 <p className="text-xs md:text-sm font-bold text-indigo-600">Checking ticket records...</p>
               </div>
             )}
@@ -201,10 +201,10 @@ export default function GlobalTicketScanner() {
                 <div className={cn(
                   "p-4 md:p-8 rounded-2xl md:rounded-[2rem] border-2 transition-all",
                   scannedTicket.justAdmitted
-                    ? "bg-emerald-50 border-emerald-400 shadow-lg shadow-emerald-100/50"
+                    ? "bg-emerald-500/10 border-emerald-500/30 shadow-none text-foreground"
                     : scannedTicket.checkedIn 
-                      ? "bg-amber-50/50 border-amber-200" 
-                      : "bg-indigo-50/30 border-indigo-100"
+                      ? "bg-amber-500/10 border-amber-500/30 text-foreground" 
+                      : "bg-emerald-500/10 border-emerald-500/30 text-foreground"
                 )}>
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-6 mb-4 md:mb-8">
                     <div className="space-y-0.5 md:space-y-1">
@@ -212,37 +212,37 @@ export default function GlobalTicketScanner() {
                       <h3 className="text-base md:text-2xl font-black text-slate-900 tracking-tight leading-none break-words">
                         {scannedTicket.eventTitle}
                       </h3>
-                      <p className="text-indigo-600 font-extrabold text-[10px] md:text-sm uppercase tracking-wider">{scannedTicket.tierName || 'General Entry'}</p>
+                      <p className="text-indigo-600 dark:text-indigo-400 font-extrabold text-[10px] md:text-sm uppercase tracking-wider">{scannedTicket.tierName || 'General Entry'}</p>
                     </div>
                     <Badge className={cn(
-                      "rounded-full px-2.5 py-1 md:px-4 md:py-2 font-black text-[8px] md:text-[10px] uppercase tracking-widest border-none shadow-sm",
-                      scannedTicket.justAdmitted
-                        ? "bg-emerald-600 text-white animate-bounce"
-                        : scannedTicket.checkedIn 
-                          ? "bg-amber-100 text-amber-700 ring-4 ring-amber-50" 
-                          : "bg-emerald-100 text-emerald-700 ring-4 ring-emerald-50"
+                       "rounded-full px-2.5 py-1 md:px-4 md:py-2 font-black text-[8px] md:text-[10px] uppercase tracking-widest border-none shadow-none",
+                       scannedTicket.justAdmitted
+                         ? "bg-emerald-600 text-white animate-bounce"
+                         : scannedTicket.checkedIn 
+                           ? "bg-amber-500/20 text-amber-500" 
+                           : "bg-emerald-500/20 text-emerald-500"
                     )}>
                       {scannedTicket.justAdmitted ? 'CHECKED IN SUCCESS' : scannedTicket.checkedIn ? 'ALREADY USED' : 'READY TO ADMIT'}
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                    <div className="bg-white p-3 md:p-5 rounded-xl md:rounded-2xl shadow-sm border border-slate-50">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 font-sans">
+                    <div className="bg-muted/40 p-3 md:p-5 rounded-xl md:rounded-2xl border border-border">
                       <div className="flex items-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
                         <User className="text-indigo-500 w-3 h-3 md:w-3.5 md:h-3.5" />
-                        <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">Recipient Name</p>
+                        <p className="text-[8px] md:text-[9px] font-black text-muted-foreground uppercase tracking-widest">Recipient Name</p>
                       </div>
-                      <p className="text-xs md:text-base font-black text-slate-900 truncate uppercase tracking-tight">{scannedTicket.holderName || 'VALUED GUEST'}</p>
-                      <p className="text-[9px] md:text-[10px] text-slate-500 font-bold truncate opacity-60 flex items-center gap-1 mt-0.5">
+                      <p className="text-xs md:text-base font-black text-foreground truncate uppercase tracking-tight">{scannedTicket.holderName || 'VALUED GUEST'}</p>
+                      <p className="text-[9px] md:text-[10px] text-muted-foreground font-bold truncate opacity-60 flex items-center gap-1 mt-0.5">
                         <Mail className="w-2.5 h-2.5" /> {scannedTicket.voterEmail || 'No email'}
                       </p>
                     </div>
-                    <div className="bg-white p-3 md:p-5 rounded-xl md:rounded-2xl shadow-sm border border-slate-50">
+                    <div className="bg-muted/40 p-3 md:p-5 rounded-xl md:rounded-2xl border border-border">
                       <div className="flex items-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
-                        <QrCode className="text-slate-400 w-3 h-3 md:w-3.5 md:h-3.5" />
-                        <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">Ticket Code</p>
+                        <QrCode className="text-muted-foreground w-3 h-3 md:w-3.5 md:h-3.5" />
+                        <p className="text-[8px] md:text-[9px] font-black text-muted-foreground uppercase tracking-widest">Ticket Code</p>
                       </div>
-                      <p className="text-xs md:text-sm font-bold text-slate-900 font-mono tracking-wider">{scannedTicket.qrCode}</p>
+                      <p className="text-xs md:text-sm font-bold text-foreground font-mono tracking-wider">{scannedTicket.qrCode}</p>
                     </div>
                   </div>
 

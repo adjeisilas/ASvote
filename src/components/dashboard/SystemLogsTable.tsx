@@ -38,9 +38,9 @@ export default function SystemLogsTable({ logs }: SystemLogsTableProps) {
   };
 
   return (
-    <div className="rounded-xl border border-slate-100 overflow-x-auto bg-white shadow-sm no-scrollbar">
+    <div className="rounded-xl border border-border overflow-x-auto bg-card shadow-sm no-scrollbar">
       <Table className="min-w-[700px] md:min-w-0">
-        <TableHeader className="bg-slate-50/50">
+        <TableHeader className="bg-muted/30">
           <TableRow>
             <TableHead className="w-[180px]">Timestamp</TableHead>
             <TableHead className="w-[150px]">Admin</TableHead>

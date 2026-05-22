@@ -57,7 +57,7 @@ export default function UserSettings() {
   return (
     <div className="max-w-2xl mx-auto py-4 md:py-6">
       <Card className="border-none shadow-sm overflow-hidden">
-        <CardHeader className="bg-white border-b border-slate-100 py-4 md:py-6">
+        <CardHeader className="bg-card border-b border-border py-4 md:py-6">
           <CardTitle className="text-lg md:text-xl">Profile Settings</CardTitle>
           <CardDescription className="text-xs md:text-sm">Update your information and contact details.</CardDescription>
         </CardHeader>
