@@ -488,6 +488,32 @@ export const checkSupabaseConfigured = (): boolean => {
 };
 
 const getSupabaseMock = (): any => {
+  if (typeof window === 'undefined') {
+    return {
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signOut: () => Promise.resolve({ error: null })
+      },
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            order: () => Promise.resolve({ data: [], error: null }),
+            single: () => Promise.resolve({ data: null, error: null }),
+            maybeSingle: () => Promise.resolve({ data: null, error: null })
+          }),
+          order: () => Promise.resolve({ data: [], error: null })
+        }),
+        insert: () => Promise.resolve({ data: [], error: null }),
+        update: () => Promise.resolve({ data: [], error: null }),
+        delete: () => Promise.resolve({ data: [], error: null })
+      }),
+      rpc: () => Promise.resolve({ data: null, error: null }),
+      channel: () => ({ on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }) })
+    };
+  }
+
   if (!isMockLoaded) {
     initializeMockData();
   }

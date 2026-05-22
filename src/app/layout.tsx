@@ -1,6 +1,7 @@
 import '../index.css';
 import React from 'react';
 import { Metadata } from 'next';
+import { AppProviders } from './AppProviders';
 
 export const metadata: Metadata = {
   verification: {
@@ -14,14 +15,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="antialiased">
-        {children}
+      <body className="antialiased font-sans">
+        <AppProviders>
+          {children}
+        </AppProviders>
       </body>
     </html>
   );
