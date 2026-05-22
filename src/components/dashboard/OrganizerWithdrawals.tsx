@@ -19,6 +19,8 @@ export default function OrganizerWithdrawals() {
   const { user } = useAuth();
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [amount, setAmount] = useState('');
+  const [momoNumber, setMomoNumber] = useState('');
+  const [momoName, setMomoName] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [totalEarnings, setTotalEarnings] = useState(0);
@@ -30,15 +32,26 @@ export default function OrganizerWithdrawals() {
       const stats = await databaseService.getOrganizerStats(user.uid);
       setTotalEarnings(stats.totalEarnings);
 
+      // Fetch fresh profile too for Momo details sync
+      const profile = await databaseService.getUserProfile(user.uid);
+      if (profile && profile.phoneNumber) {
+        const parts = profile.phoneNumber.split('||');
+        // parts[0] is standard phone, parts[1] is momo number, parts[2] is momo name
+        setMomoNumber(prev => prev || parts[1] || '');
+        setMomoName(prev => prev || parts[2] || '');
+      }
+
       const data = await databaseService.getWithdrawals(user.uid);
       setWithdrawals((data || []).map((w: any) => ({
         id: w.id,
-        organizerId: w.organizer_id,
+        organizerId: w.organizerId || w.organizer_id,
         amount: w.amount,
         status: w.status,
         createdAt: w.createdAt,
         organizerName: user.displayName,
-        organizerEmail: user.email
+        organizerEmail: user.email,
+        momoNumber: w.momoNumber,
+        momoName: w.momoName
       })));
     } catch (error) {
       console.error("Error fetching withdrawal data:", error);
@@ -108,6 +121,16 @@ export default function OrganizerWithdrawals() {
       return;
     }
 
+    if (!momoNumber.trim()) {
+      toast.error("Please enter a Mobile Money number.");
+      return;
+    }
+
+    if (!momoName.trim()) {
+      toast.error("Please enter the registered Mobile Money name.");
+      return;
+    }
+
     setConfirmOpen(true);
   };
 
@@ -116,6 +139,12 @@ export default function OrganizerWithdrawals() {
     
     setLoading(true);
     try {
+      // Persist the Momo details securely in user Profile phone string (delimited)
+      const profile = await databaseService.getUserProfile(user.uid);
+      const standardPhone = (profile?.phoneNumber || '').split('||')[0] || profile?.phoneNumber || '';
+      const serializedValue = `${standardPhone}||${momoNumber.trim()}||${momoName.trim()}`;
+      await databaseService.updateProfile(user.uid, { phoneNumber: serializedValue });
+
       await databaseService.requestWithdrawalOnServer(user.uid, parseFloat(amount));
 
       // Send notification
@@ -203,7 +232,34 @@ export default function OrganizerWithdrawals() {
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">GHS</span>
               </div>
             </div>
-            <Button type="submit" className="w-full bg-slate-900 hover:bg-indigo-600 h-12 rounded-xl font-bold transition-all" disabled={loading || availableBalance < 100}>
+
+            <div className="space-y-1">
+              <Label htmlFor="momoNumber" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Momo Mobile Number</Label>
+              <Input 
+                id="momoNumber" 
+                type="tel" 
+                placeholder="e.g. 0241234567" 
+                value={momoNumber}
+                onChange={(e) => setMomoNumber(e.target.value)}
+                className="h-11 rounded-xl font-mono font-bold"
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="momoName" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Registered Momo Name</Label>
+              <Input 
+                id="momoName" 
+                type="text" 
+                placeholder="e.g. John Doe" 
+                value={momoName}
+                onChange={(e) => setMomoName(e.target.value)}
+                className="h-11 rounded-xl font-bold"
+                required
+              />
+            </div>
+
+            <Button type="submit" className="w-full bg-slate-900 hover:bg-indigo-600 h-12 rounded-xl font-bold transition-all mt-3" disabled={loading || availableBalance < 100}>
               {loading ? <Loader2 size={16} className="animate-spin mr-2" /> : null}
               Submit Payout Request
             </Button>
@@ -217,8 +273,17 @@ export default function OrganizerWithdrawals() {
       <ConfirmationDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Confirm Withdrawal"
-        description={`Are you sure you want to request a withdrawal of ${parseFloat(amount).toLocaleString()} GHS? This request will be reviewed by an administrator.`}
+        title="Confirm Payout Destination"
+        description={
+          <div className="space-y-3 text-left">
+            <p className="text-slate-600 text-sm">Are you sure you want to request a withdrawal of <b className="text-slate-950 font-black">{parseFloat(amount).toLocaleString()} GHS</b>? This request will be reviewed by an administrator for approval.</p>
+            <div className="bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-500/10 p-3.5 rounded-2xl flex flex-col gap-1 text-[11px]">
+              <span className="font-extrabold uppercase tracking-widest text-[9px] text-emerald-600">Mobile Money Payout Destination</span>
+              <span><b>Momo Number:</b> <span className="font-mono text-xs">{momoNumber}</span></span>
+              <span><b>Momo Name:</b> <span className="font-semibold">{momoName}</span></span>
+            </div>
+          </div>
+        }
         confirmText="Confirm Request"
         cancelText="Cancel"
         onConfirm={confirmWithdraw}
@@ -235,6 +300,7 @@ export default function OrganizerWithdrawals() {
               <TableHeader className="bg-slate-50/50">
                 <TableRow>
                   <TableHead className="min-w-[150px]">Date</TableHead>
+                  <TableHead>Momo Recipient</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
@@ -242,13 +308,23 @@ export default function OrganizerWithdrawals() {
               <TableBody>
                 {fetching ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-10">Loading...</TableCell>
+                    <TableCell colSpan={4} className="text-center py-10">Loading...</TableCell>
                   </TableRow>
                 ) : withdrawals.length > 0 ? (
                   withdrawals.map((w) => (
                     <TableRow key={w.id}>
                       <TableCell className="text-[11px] md:text-sm text-slate-500 whitespace-nowrap">
                         {formatSafeDate(w.createdAt, 'MMM d, yyyy HH:mm')}
+                      </TableCell>
+                      <TableCell className="text-[11px] md:text-sm text-slate-700 whitespace-nowrap">
+                        {w.momoNumber ? (
+                          <div className="flex flex-col">
+                            <span className="font-mono font-bold text-slate-900">{w.momoNumber}</span>
+                            <span className="text-[10px] text-slate-400 font-sans">{w.momoName}</span>
+                          </div>
+                        ) : (
+                          <span className="italic text-slate-400 text-xs">Self (Profile Phone)</span>
+                        )}
                       </TableCell>
                       <TableCell className="font-bold text-slate-900 text-[11px] md:text-sm whitespace-nowrap">{w.amount.toLocaleString()} GHS</TableCell>
                       <TableCell>
@@ -261,7 +337,7 @@ export default function OrganizerWithdrawals() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-10 text-slate-500 text-xs md:text-sm">
+                    <TableCell colSpan={4} className="text-center py-10 text-slate-500 text-xs md:text-sm">
                       No withdrawal history.
                     </TableCell>
                   </TableRow>

@@ -300,7 +300,7 @@ function createQueryChain(table: string) {
     // 3. Write actions
     if (chain._insertData) {
       const itemsToInsert = Array.isArray(chain._insertData) ? chain._insertData : [chain._insertData];
-      const inserted = itemsToInsert.map(item => {
+      const inserted = itemsToInsert.map((item: any) => {
         const newItem = {
           id: item.id || `mock-id-${Math.floor(Math.random() * 1000000)}`,
           created_at: new Date().toISOString(),

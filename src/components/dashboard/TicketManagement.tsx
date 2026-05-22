@@ -49,12 +49,12 @@ export default function TicketManagement() {
             { fps: 10, qrbox: { width: 250, height: 250 } },
             false
           );
-          scanner.render((result) => {
+          scanner.render((result: string) => {
             setSearchQuery(result);
             setIsScannerOpen(false);
             scanner?.clear();
             toast.success("Code scanned successfully!");
-          }, (error) => {
+          }, (error: any) => {
             // ignore
           });
         } catch (err) {

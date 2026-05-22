@@ -66,6 +66,11 @@ export default function AdminOrganizerDetail() {
 
   const { profile, events, withdrawals, totalVolume } = data;
 
+  const phoneParts = (profile.phoneNumber || '').split('||');
+  const standardPhone = phoneParts[0] || profile.phoneNumber || '';
+  const momoNumber = phoneParts[1] || '';
+  const momoName = phoneParts[2] || '';
+
   return (
     <DashboardLayout role="admin">
       <div className="container mx-auto px-4 md:px-8 py-4">
@@ -104,7 +109,23 @@ export default function AdminOrganizerDetail() {
                   <span className="text-xs md:text-sm text-slate-500 flex items-center gap-1.5 font-medium">
                     <Clock size={12} className="text-slate-400" /> Joined {formatSafeDate(profile.createdAt, 'MMM d, yyyy')}
                   </span>
+                  {standardPhone && (
+                    <>
+                      <span className="hidden sm:block h-3 w-px bg-slate-200"></span>
+                      <span className="text-xs md:text-sm text-slate-500 flex items-center gap-1.5 font-medium">
+                        <b>Tel:</b> {standardPhone}
+                      </span>
+                    </>
+                  )}
                 </div>
+                
+                {momoNumber && (
+                  <div className="mt-2 text-xs flex flex-wrap items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-500/10 px-3 py-1.5 rounded-xl font-bold text-emerald-600 dark:text-emerald-400 max-w-fit">
+                    <span>Momo Account:</span>
+                    <span className="font-mono bg-emerald-100/60 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded text-emerald-800 dark:text-emerald-300 font-black select-all">{momoNumber}</span>
+                    <span className="text-emerald-500 font-medium">({momoName})</span>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -260,6 +281,7 @@ export default function AdminOrganizerDetail() {
                   <TableHeader className="bg-slate-50/50">
                     <TableRow>
                       <TableHead className="min-w-[120px]">Date</TableHead>
+                      <TableHead>Momo Recipient</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
@@ -270,6 +292,16 @@ export default function AdminOrganizerDetail() {
                         <TableRow key={w.id} className="hover:bg-slate-50/50">
                           <TableCell className="text-[10px] md:text-sm text-slate-600 whitespace-nowrap">
                             {formatSafeDate(w.createdAt, 'MMM d, yyyy')}
+                          </TableCell>
+                          <TableCell className="text-[10px] md:text-sm">
+                            {w.momoNumber ? (
+                              <div className="flex flex-col text-xs">
+                                <span className="font-mono font-bold text-slate-900 select-all">{w.momoNumber}</span>
+                                <span className="text-[10px] text-slate-400 font-medium">{w.momoName}</span>
+                              </div>
+                            ) : (
+                              <span className="italic text-slate-400 text-xs">Profile Default</span>
+                            )}
                           </TableCell>
                           <TableCell className="font-mono font-bold text-indigo-600 text-[10px] md:text-sm whitespace-nowrap">
                             {w.amount.toLocaleString()} GHS
@@ -287,7 +319,7 @@ export default function AdminOrganizerDetail() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={3} className="h-40 text-center text-slate-400 italic">No payout history</TableCell>
+                        <TableCell colSpan={4} className="h-40 text-center text-slate-400 italic">No payout history</TableCell>
                       </TableRow>
                     )}
                   </TableBody>

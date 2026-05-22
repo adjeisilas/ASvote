@@ -156,6 +156,9 @@ export interface Withdrawal {
   createdAt: string;
   processedBy?: string;
   processedAt?: string;
+  momoNumber?: string;
+  momoName?: string;
+  organizerPhone?: string;
 }
 
 export interface ActivityLog {

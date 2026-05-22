@@ -486,53 +486,73 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredOrganizers.length > 0 ? filteredOrganizers.map((org) => (
-                      <TableRow key={org.uid} className="hover:bg-accent/50 transition-colors">
-                        <TableCell className="cursor-pointer group" onClick={() => navigate(`/admin/organizer/${org.uid}`)}>
-                          <div className="flex flex-col">
-                            <span className="font-bold text-foreground group-hover:text-indigo-500 transition-colors text-sm md:text-base">{org.displayName}</span>
-                            <div className="flex items-center gap-2 text-[10px] md:text-xs">
-                              <span className="text-muted-foreground font-mono italic truncate max-w-[120px] md:max-w-none">{org.email}</span>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-xs md:text-sm text-muted-foreground hidden md:table-cell">
-                          {formatSafeDate(org.createdAt, 'MMM d, yyyy')}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`${
-                            org.status === 'approved' ? 'bg-green-500/10 text-green-500' : 
-                            org.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
-                          } border-none capitalize px-2 py-0 md:px-3 text-[10px] md:text-xs`}>
-                            {org.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1 md:gap-2">
-                            {org.status !== 'approved' && (
-                              <Button 
-                                size="sm" 
-                                className="bg-green-600 hover:bg-green-700 h-8 md:h-9 px-2 md:px-3 text-[10px] md:text-sm" 
-                                onClick={() => handleStatusUpdate('user', org.uid, 'approved')}
-                              >
-                                {org.status === 'pending' ? 'Approve' : (
-                                  <span className="hidden xs:inline">Approve</span>
+                    {filteredOrganizers.length > 0 ? filteredOrganizers.map((org) => {
+                      const phoneParts = (org.phoneNumber || '').split('||');
+                      const standardPhone = phoneParts[0] || org.phoneNumber || '';
+                      const momoNumber = phoneParts[1] || '';
+                      const momoName = phoneParts[2] || '';
+
+                      return (
+                        <TableRow key={org.uid} className="hover:bg-accent/50 transition-colors">
+                          <TableCell className="cursor-pointer group" onClick={() => navigate(`/admin/organizer/${org.uid}`)}>
+                            <div className="flex flex-col">
+                              <span className="font-bold text-foreground group-hover:text-indigo-500 transition-colors text-sm md:text-base">{org.displayName}</span>
+                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] md:text-xs text-muted-foreground">
+                                <span className="font-mono italic truncate max-w-[120px] md:max-w-none">{org.email}</span>
+                                {standardPhone && (
+                                  <>
+                                    <span className="hidden xs:inline h-2 w-px bg-slate-300"></span>
+                                    <span className="font-mono">{standardPhone}</span>
+                                  </>
                                 )}
+                              </div>
+                              {momoNumber && (
+                                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-emerald-600 font-bold bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded-full w-fit">
+                                  <span>Momo:</span>
+                                  <span className="font-mono text-emerald-700 dark:text-emerald-400">{momoNumber}</span>
+                                  <span className="text-emerald-500">({momoName})</span>
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-xs md:text-sm text-muted-foreground hidden md:table-cell">
+                            {formatSafeDate(org.createdAt, 'MMM d, yyyy')}
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={`${
+                              org.status === 'approved' ? 'bg-green-500/10 text-green-500' : 
+                              org.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
+                            } border-none capitalize px-2 py-0 md:px-3 text-[10px] md:text-xs`}>
+                              {org.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1 md:gap-2">
+                              {org.status !== 'approved' && (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-green-600 hover:bg-green-700 h-8 md:h-9 px-2 md:px-3 text-[10px] md:text-sm" 
+                                  onClick={() => handleStatusUpdate('user', org.uid, 'approved')}
+                                >
+                                  {org.status === 'pending' ? 'Approve' : (
+                                    <span className="hidden xs:inline">Approve</span>
+                                  )}
+                                </Button>
+                              )}
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 md:h-9 md:w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10" 
+                                onClick={() => setDeleteConfirm({ id: org.uid, name: org.displayName || 'Unnamed Organizer', type: 'user' })}
+                                title="Delete Organizer"
+                              >
+                                <Trash2 size={14} />
                               </Button>
-                            )}
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 md:h-9 md:w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10" 
-                              onClick={() => setDeleteConfirm({ id: org.uid, name: org.displayName || 'Unnamed Organizer', type: 'user' })}
-                              title="Delete Organizer"
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )) : (
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }) : (
                       <TableRow>
                         <TableCell colSpan={4} className="h-40 text-center text-muted-foreground">No organizers registered yet.</TableCell>
                       </TableRow>
@@ -733,6 +753,7 @@ export default function AdminDashboard() {
                   <TableHeader className="bg-accent/50">
                     <TableRow>
                       <TableHead className="min-w-[150px]">Organizer</TableHead>
+                      <TableHead className="min-w-[180px]">Momo Payout Details</TableHead>
                       <TableHead>Amount (GHS)</TableHead>
                       <TableHead className="hidden md:table-cell">Request Date</TableHead>
                       <TableHead>Status</TableHead>
@@ -748,6 +769,20 @@ export default function AdminDashboard() {
                             <span className="text-[10px] text-muted-foreground font-mono italic truncate max-w-[100px] md:max-w-none">{w.organizerEmail}</span>
                           </div>
                         </TableCell>
+                        <TableCell>
+                          {w.momoNumber ? (
+                            <div className="flex flex-col bg-emerald-500/5 p-2 rounded-xl border border-emerald-500/10 max-w-[200px]">
+                              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono select-all">{w.momoNumber}</span>
+                              <span className="text-[10px] text-muted-foreground font-medium truncate">{w.momoName}</span>
+                              <span className="text-[9px] uppercase tracking-wider font-extrabold text-emerald-500 mt-0.5">Mobile Money</span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col text-slate-400 italic text-xs">
+                              <span>Self/No Info</span>
+                              <span className="text-[10px] font-mono">{w.organizerPhone || 'N/A'}</span>
+                            </div>
+                          )}
+                        </TableCell>
                         <TableCell className="font-mono font-bold text-indigo-500 text-xs md:text-sm whitespace-nowrap">
                           {Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS
                         </TableCell>
@@ -759,7 +794,7 @@ export default function AdminDashboard() {
                             w.status === 'completed' ? 'bg-green-500/10 text-green-500' : 
                             w.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
                           } border-none capitalize px-2 md:px-3 text-[10px] md:text-xs`}>
-                            {w.status}
+                             {w.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right whitespace-nowrap">
@@ -778,7 +813,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     )) : (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-40 text-center">
+                        <TableCell colSpan={6} className="h-40 text-center">
                           <div className="flex flex-col items-center justify-center text-muted-foreground/40">
                             <Wallet className="w-12 h-12 mb-3 opacity-10" />
                             <p>No withdrawal requests found.</p>

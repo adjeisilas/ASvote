@@ -857,7 +857,7 @@ export const databaseService = {
 
   // --- Withdrawals ---
   async getWithdrawals(organizerId?: string) {
-    let query = supabase.from('withdrawals').select('*, profiles!organizer_id(display_name, email)');
+    let query = supabase.from('withdrawals').select('*, profiles!organizer_id(display_name, email, phone_number)');
     if (organizerId) query = query.eq('organizer_id', organizerId);
     
     const { data: rawData, error } = await query;
@@ -870,15 +870,26 @@ export const databaseService = {
       return timeB - timeA;
     });
     
-    return data.map(w => ({
-      id: w.id,
-      organizerId: w.organizer_id,
-      amount: w.amount,
-      status: w.status,
-      createdAt: w.created_at || w.timestamp,
-      organizerName: w.profiles?.display_name,
-      organizerEmail: w.profiles?.email
-    }));
+    return data.map(w => {
+      const p = w.profiles;
+      const parts = (p?.phone_number || '').split('||');
+      const standardPhone = parts[0] || p?.phone_number || '';
+      const momoNumber = parts[1] || '';
+      const momoName = parts[2] || '';
+
+      return {
+        id: w.id,
+        organizerId: w.organizer_id,
+        amount: w.amount,
+        status: w.status,
+        createdAt: w.created_at || w.timestamp,
+        organizerName: p?.display_name,
+        organizerEmail: p?.email,
+        momoNumber,
+        momoName,
+        organizerPhone: standardPhone
+      };
+    });
   },
 
   async requestWithdrawal(withdrawalData: any) {
@@ -1045,7 +1056,7 @@ export const databaseService = {
   async getAllWithdrawals() {
     const { data: rawData, error } = await supabase
       .from('withdrawals')
-      .select('*, profiles!organizer_id(id, display_name, email)');
+      .select('*, profiles!organizer_id(id, display_name, email, phone_number)');
       
     if (error) throw error;
     
@@ -1056,15 +1067,26 @@ export const databaseService = {
       return timeB - timeA;
     });
     
-    return data.map(w => ({
-      id: w.id,
-      organizerId: w.organizer_id,
-      amount: w.amount,
-      status: w.status,
-      createdAt: w.created_at || w.timestamp,
-      organizerName: w.profiles?.display_name,
-      organizerEmail: w.profiles?.email
-    }));
+    return data.map(w => {
+      const p = w.profiles;
+      const parts = (p?.phone_number || '').split('||');
+      const standardPhone = parts[0] || p?.phone_number || '';
+      const momoNumber = parts[1] || '';
+      const momoName = parts[2] || '';
+
+      return {
+        id: w.id,
+        organizerId: w.organizer_id,
+        amount: w.amount,
+        status: w.status,
+        createdAt: w.created_at || w.timestamp,
+        organizerName: p?.display_name,
+        organizerEmail: p?.email,
+        momoNumber,
+        momoName,
+        organizerPhone: standardPhone
+      };
+    });
   },
 
   async deleteProfile(id: string) {
