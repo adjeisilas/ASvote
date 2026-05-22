@@ -1,7 +1,6 @@
 import '../index.css';
 import React from 'react';
 import { Metadata } from 'next';
-import { AppProviders } from './AppProviders';
 
 export const metadata: Metadata = {
   verification: {
@@ -22,9 +21,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="antialiased font-sans">
-        <AppProviders>
-          {children}
-        </AppProviders>
+        {children}
       </body>
     </html>
   );
