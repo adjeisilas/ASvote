@@ -264,27 +264,33 @@ export const handleUSSD = async (req: Request, res: Response) => {
         case 'NOMINEE_VOTE_CODE':
           const { data: nominee } = await supabase
             .from('nominees')
-            .select('id, name, code, event_id, events(organizer_id), voting_categories(id, vote_price)')
+            .select('id, name, code, event_id, events(organizer_id, status), voting_categories(id, vote_price)')
             .eq('code', userData.toUpperCase())
             .single();
 
           if (nominee) {
-            const category = Array.isArray(nominee.voting_categories) ? nominee.voting_categories[0] : nominee.voting_categories;
-            const price = category?.vote_price || 1.0;
-            const organizerId = (nominee.events as any)?.organizer_id;
-            const categoryId = category?.id;
-            
-            responseText = `CON Nominee: ${nominee.name}\nPrice: ${price} GHS/vote\nEnter number of votes:`;
-            session = { 
-              ...session, 
-              step: 'VOTE_QUANTITY', 
-              nomineeId: nominee.id, 
-              nomineeName: nominee.name, 
-              eventId: nominee.event_id, 
-              organizerId,
-              categoryId,
-              price 
-            };
+            const eventStatus = (nominee.events as any)?.status;
+            if (eventStatus === 'ended') {
+              responseText = "END Voting has ended.";
+              session = null;
+            } else {
+              const category = Array.isArray(nominee.voting_categories) ? nominee.voting_categories[0] : nominee.voting_categories;
+              const price = category?.vote_price || 1.0;
+              const organizerId = (nominee.events as any)?.organizer_id;
+              const categoryId = category?.id;
+              
+              responseText = `CON Nominee: ${nominee.name}\nPrice: ${price} GHS/vote\nEnter number of votes:`;
+              session = { 
+                ...session, 
+                step: 'VOTE_QUANTITY', 
+                nomineeId: nominee.id, 
+                nomineeName: nominee.name, 
+                eventId: nominee.event_id, 
+                organizerId,
+                categoryId,
+                price 
+              };
+            }
           } else {
             responseText = "CON Nominee not found.\nEnter Nominee Code:";
           }
