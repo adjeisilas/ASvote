@@ -264,19 +264,33 @@ export const handleUSSD = async (req: Request, res: Response) => {
         case 'NOMINEE_VOTE_CODE':
           const { data: nominee } = await supabase
             .from('nominees')
-            .select('id, name, code, event_id, events(organizer_id, status), voting_categories(id, vote_price)')
+            .select('id, name, code, event_id, events(organizer_id, status, voting_events(end_date)), voting_categories(id, vote_price)')
             .eq('code', userData.toUpperCase())
             .single();
 
           if (nominee) {
-            const eventStatus = (nominee.events as any)?.status;
+            const eventObj = Array.isArray(nominee.events) ? nominee.events[0] : nominee.events;
+            const eventStatus = eventObj?.status;
+            const rawVotingEvents = eventObj?.voting_events;
+            const votingEventObj = Array.isArray(rawVotingEvents) ? rawVotingEvents[0] : rawVotingEvents;
+            const endDateStr = votingEventObj?.end_date;
+
+            let isEnded = false;
             if (eventStatus === 'ended') {
+              isEnded = true;
+            } else if (endDateStr && new Date(endDateStr) < new Date()) {
+              isEnded = true;
+            } else if (eventStatus !== 'active' && eventStatus !== 'approved') {
+              isEnded = true;
+            }
+
+            if (isEnded) {
               responseText = "END Voting has ended.";
               session = null;
             } else {
               const category = Array.isArray(nominee.voting_categories) ? nominee.voting_categories[0] : nominee.voting_categories;
               const price = category?.vote_price || 1.0;
-              const organizerId = (nominee.events as any)?.organizer_id;
+              const organizerId = eventObj?.organizer_id;
               const categoryId = category?.id;
               
               responseText = `CON Nominee: ${nominee.name}\nPrice: ${price} GHS/vote\nEnter number of votes:`;
