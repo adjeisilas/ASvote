@@ -54,12 +54,15 @@ export default function EventDetail() {
   };
 
   useEffect(() => {
-    setActiveTab(undefined);
-  }, [selectedCategoryId]);
+    if (selectedCategoryId) {
+      setActiveTab(event?.type === 'ticketing' ? 'info' : 'ranking');
+    } else {
+      setActiveTab(undefined);
+    }
+  }, [selectedCategoryId, event?.type]);
 
   useEffect(() => {
     fetchData();
-    setActiveTab(undefined);
   }, [id, navigate]);
 
   useEffect(() => {
@@ -254,38 +257,53 @@ export default function EventDetail() {
                     className="group cursor-pointer"
                     onClick={() => setSelectedCategoryId(category.id)}
                   >
-                    <Card className="h-full border-none shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)] dark:shadow-none rounded-[2rem] overflow-hidden group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-500 group-hover:-translate-y-2 flex flex-col bg-card border-border">
-                      <CardHeader className="p-8 md:p-10 bg-slate-900 dark:bg-[#080808] text-white relative overflow-hidden shrink-0">
-                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-[40px] -mr-16 -mt-16 group-hover:bg-indigo-400/40 transition-all duration-700"></div>
+                    <Card className="h-full border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] dark:shadow-none rounded-[2rem] overflow-hidden group-hover:shadow-[0_45px_90px_-20px_rgba(79,70,229,0.15)] transition-all duration-500 group-hover:-translate-y-2.5 flex flex-col bg-card border border-border/60">
+                      <CardHeader className="p-8 md:p-10 bg-slate-950 text-white relative overflow-hidden shrink-0">
+                         <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-br from-indigo-500/30 to-purple-500/10 rounded-full blur-[40px] -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-700"></div>
                          <div className="relative z-10">
-                           <Badge className="bg-indigo-500 text-white border-none py-1 px-3 rounded-full text-[8px] font-black uppercase tracking-widest leading-none mb-4">
+                           <Badge className="bg-indigo-600/90 text-[9px] font-black uppercase tracking-[0.2em] py-1 px-3.5 rounded-full border-none leading-none mb-5 shadow-lg shadow-indigo-950/40">
                              {event.type === 'ticketing' ? 'TICKET TIER' : 'VOTING CATEGORY'}
                            </Badge>
-                           <CardTitle className="text-2xl md:text-3xl font-black tracking-tight mb-2 group-hover:text-indigo-300 transition-colors uppercase">{category.name}</CardTitle>
-                           <div className="flex items-center gap-2 text-indigo-400 text-[10px] font-black tracking-widest uppercase">
-                             {event.type === 'ticketing' ? <Ticket size={12} /> : <Users size={12} />}
-                             {event.type === 'ticketing' ? 'Available Now' : `${categoryNominees.length} Nominees`}
+                           <CardTitle className="text-2xl md:text-3xl font-black tracking-tight mb-3 group-hover:text-indigo-350 transition-colors uppercase leading-[1.1]">{category.name}</CardTitle>
+                           <div className="flex items-center gap-2 text-indigo-400 text-[10px] font-black tracking-[0.15em] uppercase">
+                             {event.type === 'ticketing' ? <Ticket size={13} strokeWidth={2.5} /> : <Users size={13} strokeWidth={2.5} />}
+                             {event.type === 'ticketing' ? 'Available Ticket Pass' : `${categoryNominees.length} Active Nominees`}
                            </div>
                          </div>
                       </CardHeader>
+                      
+                      {/* Premium Notch Separator to resemble high-end Event Tickets */}
+                      <div className="relative bg-slate-950 select-none shrink-0" style={{ height: '24px' }}>
+                        <div className="absolute top-0 left-0 right-0 h-[12px] bg-slate-950" />
+                        <div className="absolute bottom-0 left-0 right-0 h-[12px] bg-card" />
+                        <div className="relative z-20 flex items-center justify-between h-full">
+                          <div className="w-5 h-5 rounded-full bg-background -ml-2.5 border-r border-border/20 shadow-inner" />
+                          <div className="flex-1 border-t-2 border-dashed border-border/80 dark:border-zinc-800/80 mx-2.5" />
+                          <div className="w-5 h-5 rounded-full bg-background -mr-2.5 border-l border-border/20 shadow-inner" />
+                        </div>
+                      </div>
+
                       <CardContent className="p-8 md:p-10 flex flex-col flex-grow bg-card">
                          <div className="flex flex-col gap-4 mb-auto">
-                            <div className="flex flex-col border-b border-border pb-6">
-                               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                                 {event.type === 'ticketing' ? 'Entry Fee' : 'Voting Cost'}
+                            <div className="flex flex-col">
+                               <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/80 mb-2 block">
+                                 {event.type === 'ticketing' ? 'Access Fee' : 'Cost Per Single Vote'}
                                </span>
-                               <span className="text-3xl font-black text-foreground tracking-tighter">{category.votePrice || category.price || event.votePrice || 0} <span className="text-base text-muted-foreground font-bold ml-1">GHS</span></span>
+                               <span className="text-4xl font-black text-foreground tracking-tight flex items-baseline">
+                                 {category.votePrice || category.price || event.votePrice || 0}
+                                 <span className="text-base text-muted-foreground font-bold tracking-widest ml-1.5 uppercase">GHS</span>
+                               </span>
                             </div>
                          </div>
 
-                         <div className="mt-8">
+                         <div className="mt-10">
                            <Button 
                               variant="outline"
-                              className="w-full h-12 md:h-14 rounded-xl md:rounded-2xl border-border font-black uppercase tracking-[0.2em] text-[10px] hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all gap-3"
+                              className="w-full h-12 md:h-14 rounded-2xl border-2 border-border font-black uppercase tracking-[0.18em] text-[10px] hover:bg-indigo-650 hover:text-white hover:border-indigo-650 transition-all gap-2 shadow-sm group-hover/btn:translate-x-1"
                               disabled={isEnded}
                            >
-                              {isEnded ? 'VOTING ENDED' : (event.type === 'ticketing' ? 'BUY TICKET' : 'EXPLORE CATEGORY')}
-                              <ArrowRight className="w-4 h-4" />
+                              {isEnded ? 'VOTING ENDED' : (event.type === 'ticketing' ? 'BUY TICKET PASS' : 'ENTER & EXPLORE')}
+                              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
                            </Button>
                          </div>
                       </CardContent>
@@ -449,53 +467,78 @@ export default function EventDetail() {
                           </div>
                           
                           <div className="grid grid-cols-1 gap-4 md:gap-6 px-2 md:px-0">
-                            {nominees
-                              .filter(n => n.categoryId === selectedCategoryId || (n as any).category_id === selectedCategoryId)
-                              .sort((a, b) => (b.voteCount || 0) - (a.voteCount || 0))
-                              .slice(0, 50)
-                              .map((nominee, i) => (
-                              <motion.div 
-                                key={nominee.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.05 }}
-                                className="group relative"
-                              >
-                                <div className="bg-card hover:bg-accent rounded-3xl md:rounded-[2.5rem] border border-border p-4 md:p-6 flex items-center gap-4 md:gap-8 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.05)] transition-all">
-                                     <div className={`w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[1.5rem] flex items-center justify-center font-black text-lg md:text-2xl tracking-tighter shrink-0 ${
-                                        i === 0 ? 'bg-amber-100 text-amber-600 shadow-lg shadow-amber-100/20 rotate-3' : 
-                                        i === 1 ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' : 
-                                        i === 2 ? 'bg-orange-50 dark:bg-orange-950/20 text-orange-600' : 'bg-accent text-muted-foreground'
-                                      }`}>
-                                        #{i + 1}
-                                     </div>
-                                     
-                                     <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-[1.5rem] overflow-hidden border-2 md:border-4 border-card shadow-lg md:shadow-xl bg-accent shrink-0">
-                                        {nominee.imageUrl ? (
-                                          <img src={nominee.imageUrl} alt={nominee.name} className="w-full h-full object-cover" />
-                                        ) : (
-                                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                             <UserIcon className="w-6 h-6 md:w-8 md:h-8" />
+                            {(() => {
+                              const categoryNominees = nominees.filter(n => n.categoryId === selectedCategoryId || (n as any).category_id === selectedCategoryId);
+                              const totalVotesSum = categoryNominees.reduce((sum, n) => sum + (n.voteCount || 0), 0);
+                              
+                              return categoryNominees
+                                .sort((a, b) => (b.voteCount || 0) - (a.voteCount || 0))
+                                .slice(0, 50)
+                                .map((nominee, i) => {
+                                  const voteShare = totalVotesSum > 0 ? ((nominee.voteCount || 0) / totalVotesSum) * 100 : 0;
+                                  return (
+                                    <motion.div 
+                                      key={nominee.id}
+                                      initial={{ opacity: 0, y: 15 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ delay: i * 0.05 }}
+                                      className="group relative"
+                                    >
+                                      <div className="bg-card hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 rounded-3xl md:rounded-[2.5rem] border border-border p-5 md:p-7 flex flex-col gap-4 shadow-[0_12px_36px_-20px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_-20px_rgba(79,70,229,0.1)] hover:border-indigo-500/20 transition-all duration-300">
+                                        <div className="flex items-center gap-4 md:gap-8">
+                                             <div className={`w-10 h-10 md:w-16 md:h-16 rounded-xl md:rounded-[1.5rem] flex items-center justify-center font-black text-lg md:text-2xl tracking-tighter shrink-0 ${
+                                                i === 0 ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-600 shadow-md shadow-amber-100/20 rotate-3' : 
+                                                i === 1 ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300' : 
+                                                i === 2 ? 'bg-orange-50 dark:bg-orange-950/20 text-orange-600' : 'bg-accent text-zinc-400'
+                                              }`}>
+                                                #{i + 1}
+                                             </div>
+                                             
+                                             <div className="w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-[1.5rem] overflow-hidden border-2 md:border-4 border-card shadow-lg md:shadow-xl bg-accent shrink-0">
+                                                {nominee.imageUrl ? (
+                                                  <img src={nominee.imageUrl} alt={nominee.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                                ) : (
+                                                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                                                     <UserIcon className="w-6 h-6 md:w-8 md:h-8" />
+                                                  </div>
+                                                )}
+                                             </div>
+
+                                             <div className="flex-grow min-w-0">
+                                                <h4 className="text-base md:text-2xl font-black text-foreground tracking-tight group-hover:text-indigo-600 transition-colors truncate">
+                                                  {nominee.name}
+                                                </h4>
+                                                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0.5 md:mt-1 truncate">ID: {nominee.code}</p>
+                                             </div>
+
+                                             <div className="flex flex-col items-end gap-1 shrink-0">
+                                                <span className="text-xl md:text-4xl font-black text-foreground tracking-tighter leading-none">{nominee.voteCount.toLocaleString()}</span>
+                                                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-indigo-500 block">
+                                                   {event.type === 'ticketing' ? 'Tickets' : 'Votes'}
+                                                 </span>
+                                             </div>
+                                        </div>
+                                        
+                                        {/* Dynamic glowing vote percentage share bar */}
+                                        <div className="space-y-1.5 border-t border-border/40 pt-3 md:pt-4">
+                                          <div className="flex justify-between items-center text-[9px] md:text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                                            <span>Standing Pool Share</span>
+                                            <span className="text-indigo-600 font-black">{voteShare.toFixed(1)}%</span>
                                           </div>
-                                        )}
-                                     </div>
-
-                                     <div className="flex-grow min-w-0">
-                                        <h4 className="text-base md:text-2xl font-black text-foreground tracking-tight group-hover:text-indigo-600 transition-colors truncate">
-                                          {nominee.name}
-                                        </h4>
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-0.5 md:mt-1 truncate">ID: {nominee.code}</p>
-                                     </div>
-
-                                     <div className="flex flex-col items-end gap-0.5 md:gap-1 shrink-0">
-                                        <span className="text-xl md:text-4xl font-black text-foreground tracking-tighter leading-none">{nominee.voteCount.toLocaleString()}</span>
-                                        <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-indigo-500 hidden xs:block">
-                                           {event.type === 'ticketing' ? 'Tickets' : 'Votes'}
-                                         </span>
-                                     </div>
-                                </div>
-                              </motion.div>
-                            ))}
+                                          <div className="w-full h-2 bg-accent dark:bg-zinc-900 rounded-full overflow-hidden">
+                                            <motion.div 
+                                              initial={{ width: 0 }}
+                                              animate={{ width: `${voteShare}%` }}
+                                              transition={{ duration: 1.2, ease: "easeOut" }}
+                                              className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full shadow-[0_0_12px_rgba(79,70,229,0.5)]"
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  );
+                                });
+                            })()}
                           </div>
                         </div>
                       </TabsContent>
