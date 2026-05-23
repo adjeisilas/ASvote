@@ -376,10 +376,10 @@ export default function EventDetail() {
 
                               <section>
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                                  <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-400">
                                     <Clock size={20} strokeWidth={2.5} />
                                   </div>
-                                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">
+                                  <h3 className="text-xl font-black text-foreground uppercase tracking-tight">
                                     Timeline
                                   </h3>
                                 </div>
@@ -400,20 +400,20 @@ export default function EventDetail() {
                             <div className="space-y-12">
                               <section>
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
                                     <Users size={20} strokeWidth={2.5} />
                                   </div>
-                                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Organizer</h3>
+                                  <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Organizer</h3>
                                 </div>
-                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                                <div className="bg-card p-6 rounded-3xl border border-border shadow-sm space-y-4">
                                   {event.organizerEmail && (
                                     <div className="flex items-center gap-4 group">
-                                      <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-blue-500/15 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                         <Mail size={18} />
                                       </div>
                                       <div className="min-w-0">
-                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Email Support</p>
-                                        <p className="text-slate-900 font-bold truncate">{event.organizerEmail}</p>
+                                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Email Support</p>
+                                        <p className="text-foreground font-bold truncate">{event.organizerEmail}</p>
                                       </div>
                                     </div>
                                   )}
@@ -422,13 +422,13 @@ export default function EventDetail() {
                               
                               <section>
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
+                                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-650 dark:text-orange-400">
                                     <FileText size={20} strokeWidth={2.5} />
                                   </div>
-                                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Policy</h3>
+                                  <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Policy</h3>
                                 </div>
-                                <div className="bg-orange-50/30 p-6 rounded-3xl border border-orange-100">
-                                  <p className="text-slate-700 font-medium leading-relaxed">
+                                <div className="bg-orange-500/5 p-6 rounded-3xl border border-orange-500/15">
+                                  <p className="text-muted-foreground font-medium leading-relaxed">
                                     {event.refundPolicy || "Votes cast are final and non-refundable. Please ensure you are voting for the correct nominee before proceeding."}
                                   </p>
                                 </div>
@@ -611,7 +611,7 @@ export default function EventDetail() {
 
                               <div className="w-full mt-auto">
                                 <Button 
-                                  className="w-full h-11 bg-primary hover:bg-indigo-600 text-primary-foreground rounded-xl gap-2 transition-all shadow-xl shadow-indigo-500/10 border-none font-black text-[10px] tracking-[0.2em] uppercase group/btn"
+                                  className="w-full h-11 bg-primary hover:bg-indigo-600 text-primary-foreground rounded-xl gap-2 transition-all shadow-none border-none font-black text-[10px] tracking-[0.2em] uppercase group/btn"
                                   disabled={isEnded}
                                   onClick={() => !isEnded && handleVoteClick(nominee)}
                                 >

@@ -130,7 +130,7 @@ export default function AdminOrganizerDetail() {
             </div>
             
             <div className="flex gap-3 w-full md:w-auto">
-               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-100 font-bold w-full md:w-auto text-sm h-10 px-6">
+               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-none font-bold w-full md:w-auto text-sm h-10 px-6">
                  Contact Organizer
                </Button>
             </div>
@@ -309,7 +309,7 @@ export default function AdminOrganizerDetail() {
                           <TableCell>
                             <Badge className={cn(
                               "capitalize border-none text-[10px] md:text-xs px-2 py-0 md:px-3",
-                              w.status === 'completed' ? "bg-green-100 text-green-700" :
+                              w.status === 'completed' || w.status === 'approved' ? "bg-green-100 text-green-700" :
                               w.status === 'pending' ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
                             )}>
                               {w.status}

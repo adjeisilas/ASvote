@@ -261,49 +261,54 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout role="admin">
       <div className="container mx-auto px-4 md:px-8 py-4">
-        {/* Header Section */}
-        <div className="mb-6 md:mb-10">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            <div className="w-full lg:w-auto">
-              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <Badge className="bg-indigo-600 text-white border-none py-1">Admin Central</Badge>
-                <h1 className="text-xl md:text-3xl font-extrabold text-foreground tracking-tight">System Control</h1>
-              </div>
-              <p className="text-[13px] md:text-base text-muted-foreground max-w-2xl">
-                Oversee platform health, approve organizers, and moderate active events. Use the sidebar to navigate detailed sections.
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap gap-3 md:gap-4 w-full lg:w-auto items-center">
-              <div className="flex-1 sm:flex-none">
-                <BroadcastDialog />
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-10 px-4 rounded-xl border-border hover:bg-accent transition-all font-bold gap-2 flex-1 sm:flex-none"
-                onClick={() => {
-                  setLoading(true);
-                  fetchData();
-                  toast.success("Dashboard data refreshed");
-                }}
-              >
-                <Loader2 className={cn("w-4 h-4", loading && "animate-spin")} />
-                <span className="hidden xs:inline">Refresh Data</span>
-                <span className="xs:hidden">Refresh</span>
-              </Button>
-              <Card className="bg-card border-none shadow-sm px-4 md:px-6 py-2 flex flex-col items-center hidden sm:flex shrink-0">
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold whitespace-nowrap">Health</span>
-                <span className="text-green-500 font-bold flex items-center gap-1 text-xs md:text-sm">
-                  <CheckCircle size={14} /> Operational
-                </span>
-              </Card>
-            </div>
-          </div>
-        </div>
-
         {currentTab === 'overview' && (
           <>
+            {/* Welcome Banner */}
+            <div className="bg-indigo-900 dark:bg-slate-900 text-white rounded-3xl p-6 md:p-8 border border-indigo-800/30 dark:border-slate-800 relative overflow-hidden mb-6 md:mb-10">
+              <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div className="max-w-xl">
+                  <span className="bg-indigo-800/40 text-indigo-200 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-indigo-700/20">
+                    ASVote Admin Central
+                  </span>
+                  <h1 className="text-lg sm:text-xl md:text-3xl font-black tracking-tight mt-3">
+                    Akwaaba, {user?.displayName}!
+                  </h1>
+                  <p className="text-xs sm:text-sm text-indigo-200 mt-2 leading-relaxed font-semibold">
+                    Admin Dashboard
+                  </p>
+                  <p className="text-[11px] sm:text-xs text-indigo-200/85 leading-relaxed mt-1">
+                    Quick summary of your platform performance.
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-3 md:gap-4 w-full lg:w-auto items-center">
+                  <div className="flex-1 sm:flex-none">
+                    <BroadcastDialog />
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-10 px-4 rounded-xl border-indigo-500 text-indigo-300 hover:bg-indigo-500/15 transition-all font-bold gap-2 flex-1 sm:flex-none bg-indigo-950/20 hover:text-white shadow-none"
+                    onClick={() => {
+                      setLoading(true);
+                      fetchData();
+                      toast.success("Dashboard data refreshed");
+                    }}
+                  >
+                    <Loader2 className={cn("w-4 h-4", loading && "animate-spin")} />
+                    <span className="hidden xs:inline">Refresh Data</span>
+                    <span className="xs:hidden">Refresh</span>
+                  </Button>
+                  <Card className="bg-indigo-950/40 border border-indigo-800/30 dark:bg-slate-950/40 dark:border-slate-800 rounded-xl px-4 md:px-6 py-2 flex flex-col items-center hidden sm:flex shrink-0">
+                    <span className="text-[10px] uppercase tracking-widest text-indigo-300 dark:text-slate-400 font-bold whitespace-nowrap">Health</span>
+                    <span className="text-green-400 font-bold flex items-center gap-1 text-xs md:text-sm">
+                      <CheckCircle size={14} /> Operational
+                    </span>
+                  </Card>
+                </div>
+              </div>
+            </div>
+
             {/* Action Alerts */}
             {(pendingOrganizers > 0 || pendingEvents > 0 || pendingWithdrawals > 0) && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-8 md:mb-10">
@@ -366,7 +371,7 @@ export default function AdminDashboard() {
                 { label: "Platform Revenue", value: `${(stats?.totalCommissions || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GHS`, icon: <Activity size={18} />, trend: "Net Commission" },
                 { label: "Total Engagement", value: (stats?.totalVotes || 0).toLocaleString(), icon: <BarChart3 size={18} />, trend: "Votes/Tickets" }
               ].map((stat, i) => (
-                <Card key={i} className="border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+                <Card key={i} className="border-none shadow-none overflow-hidden group bg-card">
                   <CardContent className="p-3 xs:p-4 md:pt-6">
                     <div className="flex justify-between items-start mb-3 md:mb-4">
                       <div className="p-1.5 md:p-2 bg-accent rounded-lg text-muted-foreground group-hover:text-indigo-500 transition-colors">
@@ -791,7 +796,7 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           <Badge className={`${
-                            w.status === 'completed' ? 'bg-green-500/10 text-green-500' : 
+                            w.status === 'completed' || w.status === 'approved' ? 'bg-green-500/10 text-green-500' : 
                             w.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'
                           } border-none capitalize px-2 md:px-3 text-[10px] md:text-xs`}>
                              {w.status}
@@ -803,7 +808,7 @@ export default function AdminDashboard() {
                               <Button 
                                 size="sm" 
                                 className="bg-green-600 hover:bg-green-700 h-7 md:h-8 px-2 md:px-3 text-[10px] md:text-xs font-bold" 
-                                onClick={() => handleStatusUpdate('withdrawal', w.id, 'completed')}
+                                onClick={() => handleStatusUpdate('withdrawal', w.id, 'approved')}
                               >
                                 Approve <span className="hidden sm:inline">Payout</span>
                               </Button>

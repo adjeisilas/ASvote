@@ -54,25 +54,25 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
-      <Card className="w-full max-w-md border-none shadow-xl shadow-slate-200/50 dark:shadow-none bg-white rounded-3xl overflow-hidden p-6 md:p-8">
+      <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-2">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
             <KeyRound size={28} />
           </div>
-          <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">Define New Secure Key</CardTitle>
-          <CardDescription className="text-slate-500 text-sm">
+          <CardTitle className="text-2xl font-black text-foreground tracking-tight">Define New Secure Key</CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
             Configure your brand-new, secure access key. Make sure it stays personal and highly confidential.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="pass" className="text-slate-700 font-bold text-xs uppercase tracking-wider">New Password</Label>
+              <Label htmlFor="pass" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">New Password</Label>
               <Input
                 id="pass"
                 type="password"
                 placeholder="••••••••••••"
-                className="h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                className="h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
@@ -81,12 +81,12 @@ export default function ResetPasswordPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="conf" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Confirm New Password</Label>
+              <Label htmlFor="conf" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Confirm New Password</Label>
               <Input
                 id="conf"
                 type="password"
                 placeholder="••••••••••••"
-                className="h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                className="h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
 
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl shadow-lg shadow-indigo-100 font-bold transition-all text-sm mt-2 flex items-center justify-center gap-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl shadow-none font-bold transition-all text-sm mt-2 flex items-center justify-center gap-2"
               disabled={isLoading}
             >
               {isLoading ? (

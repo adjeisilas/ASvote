@@ -570,7 +570,7 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
                                 <Button 
                                   onClick={() => downloadAllTicketsAsPDF(fetchedTickets)}
                                   disabled={isDownloading === 'all'}
-                                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl py-6 shadow-lg shadow-indigo-500/10 flex items-center justify-center gap-2 mb-4 border-none"
+                                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl py-6 shadow-none flex items-center justify-center gap-2 mb-4 border-none"
                                 >
                                   {isDownloading === 'all' ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -819,7 +819,7 @@ export default function PaymentModal({ isOpen, onClose, nominee, event, categori
                   </Button>
                   <Button 
                     type="submit" 
-                    className="flex-[2] bg-indigo-600 hover:bg-indigo-700 text-white h-12 rounded-xl shadow-lg shadow-indigo-500/10 transition-all hover:scale-[1.02] active:scale-[0.98] font-black tracking-[0.1em] text-[10px] border-none"
+                    className="flex-[2] bg-indigo-600 hover:bg-indigo-700 text-white h-12 rounded-xl shadow-none transition-all font-black tracking-[0.1em] text-[10px] border-none"
                     disabled={isProcessing}
                   >
                     {isProcessing ? (

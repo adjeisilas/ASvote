@@ -71,7 +71,7 @@ export default function UserSettings() {
                   id="displayName" 
                   value={formData.displayName || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
-                  className="pl-10 h-10 md:h-11 border-slate-200 text-sm"
+                  className="pl-10 h-10 md:h-11 border-border text-sm"
                   placeholder="Your Name or Organization Name"
                   required
                 />
@@ -87,7 +87,7 @@ export default function UserSettings() {
                   type="email"
                   value={formData.email || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="pl-10 h-10 md:h-11 border-slate-200 text-sm"
+                  className="pl-10 h-10 md:h-11 border-border text-sm"
                   placeholder="email@example.com"
                   required
                 />
@@ -104,16 +104,16 @@ export default function UserSettings() {
                   type="tel"
                   value={formData.phoneNumber || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                  className="pl-10 h-10 md:h-11 border-slate-200 text-sm"
+                  className="pl-10 h-10 md:h-11 border-border text-sm"
                   placeholder="+233..."
                 />
               </div>
             </div>
           </CardContent>
-          <CardFooter className="bg-slate-50/50 p-4 md:p-6 border-t border-slate-100 flex justify-end">
+          <CardFooter className="bg-transparent p-4 md:p-6 border-t border-border flex justify-end">
             <Button 
               type="submit" 
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 md:h-11 px-6 md:px-8 gap-2 w-full sm:w-auto font-bold"
+              className="bg-indigo-600 hover:bg-indigo-700 h-10 md:h-11 px-6 md:px-8 gap-2 w-full sm:w-auto font-bold shadow-none"
               disabled={loading}
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

@@ -71,29 +71,29 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
-      <Card className="w-full max-w-lg border-none shadow-xl shadow-slate-200/50 dark:shadow-none bg-white rounded-3xl overflow-hidden p-6 md:p-8">
+      <Card className="w-full max-w-lg border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-2">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
             <PlusCircle size={28} />
           </div>
-          <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">Become an Organizer</CardTitle>
-          <CardDescription className="text-slate-500 text-sm">
+          <CardTitle className="text-2xl font-black text-foreground tracking-tight">Become an Organizer</CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
             Launch competition voting, set up pageants, or sell ticketing passes in minutes.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="displayName" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Company / Name</Label>
+              <Label htmlFor="displayName" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Company / Name</Label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <User size={16} />
                 </span>
                 <Input
                   id="displayName"
                   type="text"
                   placeholder="AS Media Group"
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                  className="pl-10 h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   disabled={isLoading}
@@ -103,16 +103,16 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Business Email</Label>
+              <Label htmlFor="email" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Business Email</Label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Mail size={16} />
                 </span>
                 <Input
                   id="email"
                   type="email"
                   placeholder="asmedia@business.com"
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                  className="pl-10 h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -122,16 +122,16 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Contact Phone</Label>
+              <Label htmlFor="phone" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Contact Phone</Label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Phone size={16} />
                 </span>
                 <Input
                   id="phone"
                   type="tel"
                   placeholder="+233 54 123 4567"
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                  className="pl-10 h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   disabled={isLoading}
@@ -141,12 +141,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-slate-700 font-bold text-xs uppercase tracking-wider">Set Secure Key (Password)</Label>
+              <Label htmlFor="password" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Set Secure Key (Password)</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••••••"
-                className="h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                className="h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
@@ -154,16 +154,16 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl flex items-start gap-2.5 mt-2">
-              <Info size={16} className="text-slate-400 shrink-0 mt-0.5" />
-              <p className="text-[11px] text-slate-500 leading-normal">
+            <div className="bg-muted/30 border border-border p-3.5 rounded-2xl flex items-start gap-2.5 mt-2">
+              <Info size={16} className="text-muted-foreground shrink-0 mt-0.5" />
+              <p className="text-[11px] text-muted-foreground leading-normal">
                 By registering, your account will enter <b>Pending Audit status</b>. Administrator verification is required before starting public digital currency collections.
               </p>
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl shadow-lg shadow-indigo-100 font-bold transition-all text-sm mt-3 flex items-center justify-center gap-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl shadow-none font-bold transition-all text-sm mt-3 flex items-center justify-center gap-2"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -177,9 +177,9 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-slate-500 font-medium">
+          <p className="mt-6 text-center text-xs text-muted-foreground font-medium">
             Already have an account?{' '}
-            <Link to="/login" className="text-indigo-600 font-bold hover:text-indigo-700 hover:underline">
+            <Link to="/login" className="text-indigo-600 dark:text-indigo-400 font-bold hover:text-indigo-700 hover:underline">
               Log In
             </Link>
           </p>

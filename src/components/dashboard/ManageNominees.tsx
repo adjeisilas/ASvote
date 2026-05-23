@@ -334,7 +334,7 @@ export default function ManageNominees() {
               </div>
             )}
           </div>
-          <Button onClick={addCategory} className="bg-indigo-600 w-full h-10 shadow-sm shadow-indigo-100">
+          <Button onClick={addCategory} className="bg-indigo-600 w-full h-10 shadow-none">
             <Plus size={16} className="mr-1" /> {isTicketing ? 'Add Ticket Type' : 'Add Category'}
           </Button>
         </div>

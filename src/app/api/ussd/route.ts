@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     const isNewSession = !dbSession || body.newSession === true || body.newSession === "true" || (inputs.length === 0 && session.step === 'WELCOME');
 
     if (isNewSession) {
-      responseText = "CON Welcome to ASVote\n1. Vote\n2. Buy Ticket";
+      responseText = "CON Welcome To ASVotes\n\n1.Vote for a Contestant\n2.Buy Event Ticket\n3.Retieve My Tickets\n4.Help & Support\n0. Exit";
       const startData = { step: 'SERVICE_SELECT', msisdn };
       await supabase.from('ussd_sessions').upsert({
         id: sessionID,
@@ -97,10 +97,127 @@ export async function POST(req: NextRequest) {
             responseText = "CON Enter Nominee Code (e.g. NAM-01):";
             session = { ...session, step: 'NOMINEE_VOTE_CODE', type: 'vote' };
           } else if (userData === '2') {
-            responseText = "CON Enter Event Code:";
-            session = { ...session, step: 'EVENT_TICKET_CODE', type: 'ticket' };
+            // Retrieve all live tickets
+            const { data: liveEvents } = await supabase
+              .from('events')
+              .select('id, title, organizer_id')
+              .eq('type', 'ticketing')
+              .in('status', ['active', 'approved']);
+
+            const eventIds = liveEvents?.map((e: any) => e.id) || [];
+            if (eventIds.length === 0) {
+              responseText = "END No active even available at this time.  Please try again.";
+              session = null;
+            } else {
+              const { data: tiers } = await supabase
+                .from('ticket_tiers')
+                .select('id, name, price, event_id')
+                .in('event_id', eventIds);
+
+              if (!tiers || tiers.length === 0) {
+                responseText = "END No active even available at this time.  Please try again.";
+                session = null;
+              } else {
+                let tierList = "CON Select Ticket:\n";
+                const mappedTiers = tiers.map((t: any) => {
+                  const parentEvent = liveEvents.find((e: any) => e.id === t.event_id);
+                  return {
+                    ...t,
+                    eventTitle: parentEvent?.title || "Event",
+                    organizerId: parentEvent?.organizer_id
+                  };
+                });
+                
+                mappedTiers.forEach((t: any, i: number) => {
+                  tierList += `${i + 1}. ${t.eventTitle} - ${t.name} (${t.price} GHS)\n`;
+                });
+                responseText = tierList;
+                session = {
+                  ...session,
+                  step: 'LIVE_TICKET_SELECT',
+                  type: 'ticket',
+                  tiers: mappedTiers
+                };
+              }
+            }
+          } else if (userData === '3') {
+            const msisdnUssdEmail = `${msisdn}@asvote.ussd`;
+            // Fetch transactions
+            const { data: txs } = await supabase
+              .from('transactions')
+              .select('id')
+              .eq('status', 'success')
+              .eq('type', 'ticket')
+              .or(`voter_email.eq.${msisdn},voter_email.eq.${msisdnUssdEmail}`);
+
+            const txIds = txs?.map((t: any) => t.id) || [];
+            
+            // also fetch tickets that might have ticket_holder_email equal to msisdn
+            const [ticketsByNameEmailRes, ticketsByTxRes] = await Promise.all([
+              supabase
+                .from('tickets')
+                .select('id, transaction_id, events(title), ticket_tiers(name), qr_code')
+                .or(`ticket_holder_email.eq.${msisdn},ticket_holder_email.eq.${msisdnUssdEmail},ticket_holder_name.eq.${msisdn}`),
+              txIds.length > 0
+                ? supabase
+                    .from('tickets')
+                    .select('id, transaction_id, events(title), ticket_tiers(name), qr_code')
+                    .in('transaction_id', txIds)
+                : Promise.resolve({ data: [] })
+            ]);
+
+            const allTickets = [
+              ...(ticketsByNameEmailRes.data || []),
+              ...(ticketsByTxRes.data || [])
+            ];
+
+            // deduplicate by id
+            const phoneTickets = Array.from(new Map(allTickets.map((t: any) => [t.id, t])).values());
+
+            if (phoneTickets.length > 0) {
+              let ticketMsg = `END Ticket(s) found and sent via SMS to ${msisdn}.\n\n`;
+              phoneTickets.forEach((t: any, idx: number) => {
+                const eventName = (t.events as any)?.title || "Event";
+                const tierName = (t.ticket_tiers as any)?.name || "Ticket";
+                ticketMsg += `${idx + 1}. ${eventName} - ${tierName}\nCode: ${t.qr_code}\n\n`;
+              });
+              if (ticketMsg.length > 250) {
+                ticketMsg = ticketMsg.substring(0, 247) + "...";
+              }
+              responseText = ticketMsg;
+            } else {
+              responseText = `END No ticket found for this phone ${msisdn}.  Please try again.`;
+            }
+            session = null;
+          } else if (userData === '4') {
+            responseText = "END ASVotes Support.  \nFor assistance, contact:\nEmail: support@asvotes.com\nPhone: +233247558915\nVisit: www.asvotes.com";
+            session = null;
+          } else if (userData === '0') {
+            responseText = "END Thank you for using ASVotes.";
+            session = null;
           } else {
-            responseText = "CON Invalid option.\n1. Vote\n2. Buy Ticket";
+            responseText = "CON Invalid option.\n\nWelcome To ASVotes\n1.Vote for a Contestant\n2.Buy Event Ticket\n3.Retieve My Tickets\n4.Help & Support\n0. Exit";
+          }
+          break;
+
+        case 'LIVE_TICKET_SELECT':
+          const liveTierIdx = parseInt(userData) - 1;
+          if (session.tiers && session.tiers[liveTierIdx]) {
+            const selectedTier = session.tiers[liveTierIdx];
+            responseText = `CON Tier: ${selectedTier.name}\nPrice: ${selectedTier.price} GHS\nEnter quantity:`;
+            session = { 
+              ...session, 
+              step: 'TICKET_QUANTITY', 
+              eventId: selectedTier.event_id,
+              eventTitle: selectedTier.eventTitle,
+              organizerId: selectedTier.organizerId,
+              tierId: selectedTier.id, 
+              tierName: selectedTier.name, 
+              price: selectedTier.price,
+              type: 'ticket'
+            };
+          } else {
+            responseText = "CON Invalid tier selection.\nSelect Ticket:";
           }
           break;
 
@@ -125,7 +242,7 @@ export async function POST(req: NextRequest) {
                 tierList += `${i + 1}. ${t.name} (${t.price} GHS)\n`;
               });
               responseText = tierList;
-              session = { ...session, step: 'TICKET_TIER_SELECT', eventId: event.id, eventTitle: event.title, organizerId: event.organizer_id, tiers };
+              session = { ...session, step: 'TICKET_TIER_SELECT', eventId: event.id, eventTitle: event.title, organizerId: event.organizer_id, tiers, type: 'ticket' };
             } else {
               responseText = "END This event has no ticket tiers available.";
               session = null;
@@ -140,7 +257,7 @@ export async function POST(req: NextRequest) {
           if (session.tiers && session.tiers[tierIdx]) {
             const selectedTier = session.tiers[tierIdx];
             responseText = `CON Tier: ${selectedTier.name}\nPrice: ${selectedTier.price} GHS\nEnter quantity:`;
-            session = { ...session, step: 'TICKET_QUANTITY', tierId: selectedTier.id, tierName: selectedTier.name, price: selectedTier.price };
+            session = { ...session, step: 'TICKET_QUANTITY', tierId: selectedTier.id, tierName: selectedTier.name, price: selectedTier.price, type: 'ticket' };
           } else {
             responseText = "CON Invalid tier selection.\nSelect Tier:";
           }

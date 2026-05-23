@@ -41,29 +41,29 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
-      <Card className="w-full max-w-md border-none shadow-xl shadow-slate-200/50 dark:shadow-none bg-white rounded-3xl overflow-hidden p-6 md:p-8">
+      <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 mb-2">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-2">
             <Lock size={26} />
           </div>
-          <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">Recover Secure Key</CardTitle>
-          <CardDescription className="text-slate-500 text-sm">
+          <CardTitle className="text-2xl font-black text-foreground tracking-tight">Recover Secure Key</CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
             Input the email mapped to your profile, and we will dispatch password recovery instructions.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleResetRequest} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 font-bold text-xs uppercase tracking-wider">MAPPED EMAIL ADDRESS</Label>
+              <Label htmlFor="email" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">MAPPED EMAIL ADDRESS</Label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Mail size={16} />
                 </span>
                 <Input
                   id="email"
                   type="email"
                   placeholder="organizer@asvote.com"
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
+                  className="pl-10 h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
 
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl shadow-lg shadow-indigo-100 font-bold transition-all text-sm mt-2 flex items-center justify-center gap-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl shadow-none font-bold transition-all text-sm mt-2 flex items-center justify-center gap-2"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -88,8 +88,8 @@ export default function ForgotPasswordPage() {
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-100 flex justify-center">
-            <Link to="/login" className="text-slate-500 hover:text-slate-800 text-xs font-bold flex items-center gap-2 transition-colors">
+          <div className="mt-8 pt-6 border-t border-border flex justify-center">
+            <Link to="/login" className="text-muted-foreground hover:text-foreground text-xs font-bold flex items-center gap-2 transition-colors">
               <ArrowLeft size={14} /> Back to Sign In
             </Link>
           </div>

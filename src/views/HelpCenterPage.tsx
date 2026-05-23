@@ -50,19 +50,19 @@ export default function HelpCenterPage() {
   return (
     <div className="container mx-auto px-4 md:px-8 py-8 md:py-16 max-w-4xl">
       <div className="text-center mb-10">
-        <span className="bg-indigo-50 border border-indigo-150 px-3.5 py-1 rounded-full text-[10px] font-black uppercase text-indigo-600 tracking-wider">
+        <span className="bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 rounded-full text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
           ASVOTE KNOWLEDGE HUB
         </span>
-        <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mt-3">
+        <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mt-3">
           How can we help you today?
         </h1>
         <div className="relative max-w-lg mx-auto mt-6">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
           <Input 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search FAQs, nominee setups, ticket clearances..."
-            className="pl-11 h-12 border-slate-200 rounded-2xl shadow-sm focus-visible:ring-indigo-500 bg-white"
+            className="pl-11 h-12 border-border rounded-2xl shadow-sm focus-visible:ring-indigo-500 bg-background text-foreground"
           />
         </div>
       </div>
@@ -74,22 +74,22 @@ export default function HelpCenterPage() {
           return (
             <Card 
               key={idx} 
-              className="border border-slate-100 shadow-none rounded-2xl cursor-pointer hover:border-slate-200 transition-colors"
+              className="border border-border bg-card text-card-foreground shadow-none rounded-2xl cursor-pointer hover:border-indigo-500/40 transition-colors"
               onClick={() => setOpenIndex(isOpen ? null : idx)}
             >
               <CardContent className="p-5 flex justify-between items-start gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="p-1 px-2.5 rounded text-[8px] font-black uppercase tracking-wider bg-slate-100 text-slate-500">
+                    <span className="p-1 px-2.5 rounded text-[8px] font-black uppercase tracking-wider bg-muted text-muted-foreground">
                       {faq.category}
                     </span>
                   </div>
-                  <h4 className="font-bold text-slate-950 text-sm md:text-base mt-2 flex items-center gap-1.5">
+                  <h4 className="font-bold text-foreground text-sm md:text-base mt-2 flex items-center gap-1.5 font-sans">
                     <HelpCircle size={16} className="text-indigo-500 shrink-0" />
                     {faq.q}
                   </h4>
                   {isOpen && (
-                    <p className="text-xs md:text-sm text-slate-500 mt-3 leading-relaxed border-t border-slate-100 pt-3">
+                    <p className="text-xs md:text-sm text-muted-foreground mt-3 leading-relaxed border-t border-border pt-3">
                       {faq.a}
                     </p>
                   )}
@@ -101,10 +101,10 @@ export default function HelpCenterPage() {
             </Card>
           );
         }) : (
-          <div className="bg-slate-50 border border-slate-100 p-8 rounded-3xl text-center">
-            <AlertCircle size={32} className="mx-auto text-slate-400 mb-2" />
-            <p className="font-bold text-slate-700 text-sm">No articles matched your keywords</p>
-            <p className="text-xs text-slate-400 mt-1">Please try standard terms like "withdrawals" or "votes".</p>
+          <div className="bg-muted/30 border border-border p-8 rounded-3xl text-center">
+            <AlertCircle size={32} className="mx-auto text-muted-foreground mb-2" />
+            <p className="font-bold text-foreground text-sm">No articles matched your keywords</p>
+            <p className="text-xs text-muted-foreground mt-1">Please try standard terms like "withdrawals" or "votes".</p>
           </div>
         )}
       </div>

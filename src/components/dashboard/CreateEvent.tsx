@@ -242,13 +242,13 @@ export default function CreateEvent() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Button variant="ghost" onClick={() => navigate('/organizer')} className="mb-6 gap-2 text-slate-500">
+      <Button variant="ghost" onClick={() => navigate('/organizer')} className="mb-6 gap-2 text-slate-500 dark:text-slate-400">
         <ArrowLeft size={16} /> Back to Dashboard
       </Button>
 
-      <Card className="border-none shadow-xl">
-        <CardHeader className="border-b border-slate-100 pb-8">
-          <CardTitle className="text-2xl font-bold text-slate-900">
+      <Card className="border-none shadow-none bg-card text-card-foreground">
+        <CardHeader className="border-b border-border pb-8">
+          <CardTitle className="text-2xl font-bold text-foreground">
             {eventId ? 'Edit Event' : 'Create New Event'}
           </CardTitle>
           <CardDescription>
@@ -279,13 +279,13 @@ export default function CreateEvent() {
                 onValueChange={(val: any) => setFormData(prev => ({ ...prev, type: val }))}
                 className="flex gap-4"
               >
-                <div className="flex items-center space-x-2 border border-slate-200 rounded-lg p-3 flex-1 bg-slate-50 cursor-pointer">
+                <div className="flex items-center space-x-2 border border-slate-200 dark:border-slate-800 rounded-lg p-3 flex-1 bg-slate-50 dark:bg-slate-900 cursor-pointer">
                   <RadioGroupItem value="voting" id="voting" />
-                  <Label htmlFor="voting" className="font-semibold cursor-pointer">Voting Event</Label>
+                  <Label htmlFor="voting" className="font-semibold cursor-pointer text-foreground">Voting Event</Label>
                 </div>
-                <div className="flex items-center space-x-2 border border-slate-200 rounded-lg p-3 flex-1 bg-slate-50 cursor-pointer">
+                <div className="flex items-center space-x-2 border border-slate-200 dark:border-slate-800 rounded-lg p-3 flex-1 bg-slate-50 dark:bg-slate-900 cursor-pointer">
                   <RadioGroupItem value="ticketing" id="ticketing" />
-                  <Label htmlFor="ticketing" className="font-semibold cursor-pointer">Ticketing Event</Label>
+                  <Label htmlFor="ticketing" className="font-semibold cursor-pointer text-foreground">Ticketing Event</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -314,12 +314,12 @@ export default function CreateEvent() {
                 onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
                 className="h-11 shadow-sm"
               />
-              <p className="text-xs text-slate-500">Add tags to help people find your event.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Add tags to help people find your event.</p>
             </div>
 
             {formData.type === 'ticketing' && (
-              <div className="space-y-6 pt-4 border-t border-slate-100">
-                <h3 className="text-lg font-bold text-slate-900">Ticketing Details</h3>
+              <div className="space-y-6 pt-4 border-t border-border">
+                <h3 className="text-lg font-bold text-foreground">Ticketing Details</h3>
                 
                 <div className="space-y-2">
                   <Label htmlFor="venue">Venue Details (Physical Address or Virtual Link)</Label>
@@ -477,7 +477,7 @@ export default function CreateEvent() {
             <div className="space-y-2">
               <Label htmlFor="coverImage">Event Cover Image</Label>
               {coverImagePreview ? (
-                <div className="relative group rounded-xl overflow-hidden aspect-video border border-slate-200">
+                <div className="relative group rounded-xl overflow-hidden aspect-video border border-border">
                   <img src={coverImagePreview} alt="Preview" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button 
@@ -495,12 +495,12 @@ export default function CreateEvent() {
                 <div className="relative">
                   <Label 
                     htmlFor="coverImageInput" 
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white shadow-sm"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors bg-white dark:bg-slate-950 shadow-sm"
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-3 text-slate-400" />
-                      <p className="mb-2 text-sm text-slate-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                      <p className="text-xs text-slate-400">PNG, JPG or WEBP (MAX. 1MB)</p>
+                      <Upload className="w-8 h-8 mb-3 text-slate-400 dark:text-slate-500" />
+                      <p className="mb-2 text-sm text-slate-500 dark:text-slate-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">PNG, JPG or WEBP (MAX. 1MB)</p>
                     </div>
                     <input 
                       id="coverImageInput" 
@@ -514,7 +514,7 @@ export default function CreateEvent() {
               )}
             </div>
 
-            <Button type="submit" className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100" disabled={loading}>
+            <Button type="submit" className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 shadow-none" disabled={loading}>
               {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
               {loading ? 'Saving...' : (eventId ? 'Update Event' : 'Create Event')}
             </Button>

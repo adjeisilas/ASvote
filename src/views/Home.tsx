@@ -168,7 +168,7 @@ export default function Home() {
 
                 <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                   <Link to="/register" className="group">
-                    <Button className="w-full sm:w-auto bg-primary hover:bg-indigo-600 text-primary-foreground h-14 md:h-16 px-10 md:px-12 rounded-2xl text-base font-black shadow-xl shadow-indigo-500/10 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3 border-none">
+                    <Button className="w-full sm:w-auto bg-primary hover:bg-indigo-600 text-primary-foreground h-14 md:h-16 px-10 md:px-12 rounded-2xl text-base font-black shadow-none transition-all flex items-center justify-center gap-3 border-none">
                       GET STARTED <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
@@ -608,7 +608,7 @@ export default function Home() {
                           />
                        </div>
                     </div>
-                    <Button className="h-12 md:h-20 w-full bg-primary text-primary-foreground font-black rounded-xl md:rounded-3xl hover:bg-indigo-600 transition-all uppercase text-[10px] md:text-lg tracking-[0.1em] md:tracking-[0.2em] shadow-2xl group/btn flex items-center justify-center gap-2 md:gap-4 border-none">
+                    <Button className="h-12 md:h-20 w-full bg-primary text-primary-foreground font-black rounded-xl md:rounded-3xl hover:bg-indigo-600 transition-all uppercase text-[10px] md:text-lg tracking-[0.1em] md:tracking-[0.2em] shadow-none group/btn flex items-center justify-center gap-2 md:gap-4 border-none">
                        Subscribe to Pulse
                        <ArrowRight className="w-3 h-3 md:w-6 md:h-6 transition-transform group-hover:translate-x-1" />
                     </Button>

@@ -174,7 +174,7 @@ export default function OrganizerEvents() {
               </div>
             </div>
             <Button 
-              className="bg-indigo-600 hover:bg-indigo-700 h-10 px-6 gap-2 shadow-lg shadow-indigo-100/10 font-bold transition-all hover:scale-105 active:scale-95"
+              className="bg-indigo-600 hover:bg-indigo-700 h-10 px-6 gap-2 shadow-none font-bold"
               onClick={() => navigate('/organizer/new-event')}
             >
               <Plus size={18} /> Create New Event
@@ -350,7 +350,7 @@ export default function OrganizerEvents() {
                         </p>
                         {!searchQuery && (
                           <Button 
-                            className="mt-6 bg-indigo-600 font-bold h-10 px-6 rounded-xl shadow-lg shadow-indigo-100"
+                            className="mt-6 bg-indigo-600 font-bold h-10 px-6 rounded-xl shadow-none"
                             onClick={() => navigate('/organizer/new-event')}
                           >
                             <CalendarDays size={16} className="mr-2" />

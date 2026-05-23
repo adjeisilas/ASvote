@@ -64,7 +64,7 @@ export default function BroadcastDialog() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger
         render={
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 rounded-xl shadow-lg shadow-indigo-200 h-10 px-6">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 rounded-xl shadow-none h-10 px-6">
             <Megaphone size={18} />
             <span className="hidden xs:inline">Broadcast to Organizers</span>
             <span className="xs:hidden">Broadcast</span>
