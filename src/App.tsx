@@ -54,7 +54,6 @@ import { Toaster } from './components/ui/sonner';
 
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import VerificationBanner from './components/layout/VerificationBanner';
-import DatabaseStatusBanner from './components/layout/DatabaseStatusBanner';
 import ScrollToTop from './components/layout/ScrollToTop';
 
 function AppContent() {
@@ -147,7 +146,6 @@ function AppContent() {
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300">
       <ScrollToTop />
       <VerificationBanner />
-      <DatabaseStatusBanner />
       {!hideNavbar && <Navbar />}
       <main className="flex-grow">
         <Routes>

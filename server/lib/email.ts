@@ -17,53 +17,17 @@ const getResend = () => {
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'ASVote <onboarding@resend.dev>';
 
+const isSupabaseConfigured = () => {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  return !!(url && key && url.startsWith('http'));
+};
+
 export const sendTicketEmail = async (email: string, eventTitle: string, nomineeName: string | undefined, tickets: any[]) => {
   const resend = getResend();
   
   if (!resend) {
-    console.warn("RESEND_API_KEY is missing. Email skipped.");
-    console.log(`[Ticket Email Simulation] To: ${email}
-Event: ${eventTitle}
-Tier: ${nomineeName || 'General'}
-Tickets:`, tickets.map((t, idx) => `\n  - Ticket #${idx + 1}: QR Code URL -> https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${t.qr_code || t.qrCode} (Code string: ${t.qr_code || t.qrCode})`).join(''));
-    
-    // Create notifications explaining unconfigured API key
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
-
-      if (profile) {
-        await supabase.from('notifications').insert([{
-          user_id: profile.id,
-          title: 'Tickets Secured (Email Notification Disabled) 🎟️',
-          message: `Your tickets for "${eventTitle}" have been successfully secured! Real email delivery was skipped because the server's RESEND_API_KEY is not configured. But don't worry—you can download or view your digital passes on-screen or from your profile!`,
-          type: 'warning',
-          read: false
-        }]);
-      }
-
-      // Notify admin/owner about missing settings
-      const { data: admin } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', 'adjeisikapasilas@gmail.com')
-        .maybeSingle();
-
-      if (admin && (!profile || admin.id !== profile.id)) {
-        await supabase.from('notifications').insert([{
-          user_id: admin.id,
-          title: 'Ticket Email Delivery Skipped (Unconfigured) ⚠️',
-          message: `A client (${email}) successfully bought tickets for "${eventTitle}", but the email system is skipped. To send real emails, please go to your Settings and configure the "RESEND_API_KEY" secret!`,
-          type: 'warning',
-          read: false
-        }]);
-      }
-    } catch (err: any) {
-      console.error("Failed to insert offline notifications:", err.message || err);
-    }
+    console.warn("RESEND_API_KEY is missing. Ticket email delivery skipped.");
     return;
   }
 
@@ -111,42 +75,44 @@ Tickets:`, tickets.map((t, idx) => `\n  - Ticket #${idx + 1}: QR Code URL -> htt
   } catch (err: any) {
     console.error("Failed to send ticket email:", err);
     
-    // Submit in-app helpful error reports for diagnostics
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
+    // Submit in-app helpful error reports for diagnostics only if Supabase is fully configured
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
 
-      if (profile) {
-        await supabase.from('notifications').insert([{
-          user_id: profile.id,
-          title: 'Email Delivery Issue 🎟️',
-          message: `We secured your tickets for "${eventTitle}", but couldn't send the email dispatch to ${email}. Error: ${err.message || JSON.stringify(err)}. You can download your digital passes on-screen!`,
-          type: 'error',
-          read: false
-        }]);
+        if (profile) {
+          await supabase.from('notifications').insert([{
+            user_id: profile.id,
+            title: 'Email Delivery Issue 🎟️',
+            message: `We secured your tickets for "${eventTitle}", but couldn't send the email dispatch to ${email}. Error: ${err.message || JSON.stringify(err)}. You can download your digital passes on-screen!`,
+            type: 'error',
+            read: false
+          }]);
+        }
+
+        // Notify developer admin about exact API failure
+        const { data: admin } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', 'adjeisikapasilas@gmail.com')
+          .maybeSingle();
+
+        if (admin && (!profile || admin.id !== profile.id)) {
+          await supabase.from('notifications').insert([{
+            user_id: admin.id,
+            title: 'Resend Email API Failure 🚨',
+            message: `Could not send ticket email to ${email} for "${eventTitle}". Resend API Error: ${err.message || JSON.stringify(err)}. If in sandbox, ensure target email is verified on Resend!`,
+            type: 'error',
+            read: false
+          }]);
+        }
+      } catch (logErr: any) {
+        console.error("Failed to insert email failure notifications:", logErr.message || logErr);
       }
-
-      // Notify developer admin about exact API failure
-      const { data: admin } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', 'adjeisikapasilas@gmail.com')
-        .maybeSingle();
-
-      if (admin && (!profile || admin.id !== profile.id)) {
-        await supabase.from('notifications').insert([{
-          user_id: admin.id,
-          title: 'Resend Email API Failure 🚨',
-          message: `Could not send ticket email to ${email} for "${eventTitle}". Resend API Error: ${err.message || JSON.stringify(err)}. If in sandbox, ensure target email is verified on Resend!`,
-          type: 'error',
-          read: false
-        }]);
-      }
-    } catch (logErr: any) {
-      console.error("Failed to insert email failure notifications:", logErr.message || logErr);
     }
   }
 };
@@ -156,31 +122,7 @@ export const sendSupportEmail = async (name: string, email: string, subject: str
   const adminEmail = 'adjeisikapasilas@gmail.com';
 
   if (!resend) {
-    console.warn("RESEND_API_KEY is missing. Support email skipped.");
-    console.log(`[Support Email Simulation] From: ${name} (${email})
-Subject: ${subject}
-Message: ${message}`);
-
-    // Create a notification for the admin about the support ticket
-    try {
-      const { data: admin } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', adminEmail)
-        .maybeSingle();
-
-      if (admin) {
-        await supabase.from('notifications').insert([{
-          user_id: admin.id,
-          title: 'New Support Ticket Registered 🎫',
-          message: `Ticket from ${name} (${email}) - Subject: "${subject}". Message: "${message.substring(0, 100)}...". Email was simulated because RESEND_API_KEY is not configured.`,
-          type: 'info',
-          read: false
-        }]);
-      }
-    } catch (err: any) {
-      console.error("Failed to insert support notification:", err.message || err);
-    }
+    console.warn("RESEND_API_KEY is missing. Support email delivery skipped.");
     return;
   }
 
