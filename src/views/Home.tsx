@@ -26,7 +26,7 @@ export default function Home() {
       id: 'fallback-system',
       title: 'Host Your First Event',
       description: 'Create and launch highly customized live voting campaigns and secure ticketing experiences on ASVote.',
-      coverImage: '',
+      coverImage: 'https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000',
       type: 'voting' as const,
       status: 'active' as const,
       organizerId: 'system',
@@ -209,6 +209,12 @@ export default function Home() {
                           <div className="relative flex-1 overflow-hidden rounded-2xl w-full h-full">
                             {isUsingFallbacks ? (
                               <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex flex-col justify-between p-8 relative overflow-hidden">
+                                <img 
+                                  src="https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000" 
+                                  alt="No Live Event Fallback" 
+                                  className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay transition-transform duration-[1.2s] group-hover:scale-105 pointer-events-none"
+                                  referrerPolicy="no-referrer"
+                                />
                                 <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
                                 <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-blue-600/5 rounded-full blur-3xl"></div>
                                 
@@ -490,7 +496,15 @@ export default function Home() {
           </div>
         ) : (
           /* High-Fidelity Clean empty state for a pristine developer/production environment */
-          <div className="flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto bg-card/45 backdrop-blur-md rounded-[2.5rem] border border-border/80 shadow-md">
+          <div className="flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto bg-card/45 backdrop-blur-md rounded-[2.5rem] border border-border/80 shadow-md relative overflow-hidden">
+            <div className="absolute inset-0 -z-10 pointer-events-none opacity-[0.03]">
+              <img 
+                src="https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000" 
+                alt="Empty State Background" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </div>
             <div className="w-16 h-16 rounded-[1.2rem] bg-indigo-500/5 border border-indigo-505/10 flex items-center justify-center mb-6 text-indigo-550 shadow-inner">
               <Calendar size={28} className="text-indigo-600 dark:text-indigo-400" />
             </div>
