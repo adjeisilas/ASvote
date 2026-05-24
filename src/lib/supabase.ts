@@ -381,7 +381,7 @@ const getSupabaseMock = (): any => {
 
   const getMockSession = (): any => {
     const user = mockUser();
-    return user ? { user, access_token: 'mock-authorization-jwt' } : null;
+    return user ? { user, access_token: `mock-authorization-jwt:${user.id}` } : null;
   };
 
   const notifyListeners = (event: string, session: any) => {
@@ -494,7 +494,7 @@ const getSupabaseMock = (): any => {
           };
 
           localStorage.setItem('asvote_mock_user', JSON.stringify(userObj));
-          const session = { user: userObj, access_token: 'mock-google-jwt-token' };
+          const session = { user: userObj, access_token: `mock-google-jwt-token:${userObj.id}` };
           
           notifyListeners('SIGNED_IN', session);
           return { data: { provider: 'google', url: options?.redirectTo || window.location.origin }, error: null };
@@ -522,7 +522,7 @@ const getSupabaseMock = (): any => {
 
         localStorage.setItem('asvote_mock_user', JSON.stringify(userObj));
         
-        const session = { user: userObj, access_token: 'mock-token' };
+        const session = { user: userObj, access_token: `mock-token:${userObj.id}` };
         notifyListeners('SIGNED_IN', session);
 
         return { data: { user: userObj, session }, error: null };
