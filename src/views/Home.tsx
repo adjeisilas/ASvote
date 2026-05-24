@@ -150,7 +150,7 @@ export default function Home() {
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="space-y-6"
               >
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 dark:bg-indigo-500/20 border border-indigo-500/20 mb-2 shadow-xs">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-500/20 mb-2 shadow-xs bg-transparent">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
@@ -180,16 +180,16 @@ export default function Home() {
                   </a>
                 </div>
 
-                <div className="pt-6 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                  <div className="flex items-center gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                <div className="pt-6 grid grid-cols-2 lg:flex lg:flex-wrap items-center justify-center lg:justify-start gap-3">
+                  <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
                     <Shield size={14} className="text-indigo-650" />
                     <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Paystack Secure</span>
                   </div>
-                  <div className="flex items-center gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
                     <Zap size={14} className="text-indigo-650" />
                     <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Instant Updates</span>
                   </div>
-                  <div className="flex items-center gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                  <div className="col-span-2 justify-self-center flex items-center justify-center lg:justify-start gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
                     <CheckCircle2 size={14} className="text-indigo-650" />
                     <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Verified Results</span>
                   </div>
