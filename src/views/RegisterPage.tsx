@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -69,8 +70,13 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password || !displayName || !phone) {
+    if (!email || !password || !displayName || !phone || !confirmPassword) {
       toast.error('All registration fields are required.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match.');
       return;
     }
 
@@ -199,6 +205,20 @@ export default function RegisterPage() {
                 className="h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="confirmPassword" className="text-muted-foreground font-bold text-xs uppercase tracking-wider">Confirm Secure Key (Password)</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••••••"
+                className="h-11 border-border bg-background text-foreground focus-visible:ring-indigo-500 rounded-xl"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
                 required
               />

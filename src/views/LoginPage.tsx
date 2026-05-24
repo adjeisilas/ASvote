@@ -49,7 +49,14 @@ export default function LoginPage() {
       // Wait for AuthContext routing to process, or redirect manually based on metadata
     } catch (err: any) {
       console.error('Authentication Error:', err);
-      toast.error(err.message || 'Login failed. Please check your credentials.');
+      let errMsg = err.message || 'Login failed. Please check your credentials.';
+      const isConfigured = checkSupabaseConfigured();
+      if (isConfigured && (email.toLowerCase() === 'organizer@test.com' || email.toLowerCase() === 'admin@test.com' || email.toLowerCase() === 'organizer@asvote.com')) {
+        errMsg = `Invalid login credentials. Since your custom live Supabase database is connected, default developer accounts do not exist in your user catalog yet. Please register a brand-new account first, or toggle Offline Demo Mode below to use demo credentials!`;
+      } else if (errMsg.includes('Invalid login credentials')) {
+        errMsg = `Invalid login credentials. Please verify your email and secure key, or register a new administrator/organizer profile.`;
+      }
+      toast.error(errMsg, { duration: 8000 });
     } finally {
       setIsLoading(false);
     }
@@ -209,12 +216,48 @@ export default function LoginPage() {
             Google account
           </Button>
 
-          <p className="mt-8 text-center text-xs text-slate-500 font-medium">
+          <p className="mt-8 text-center text-xs text-slate-500 font-medium pb-2 border-b border-border/80">
             Don't have an ASVote account?{' '}
             <Link to="/register" className="text-indigo-600 font-bold hover:text-indigo-700 hover:underline">
               Register as Organizer
             </Link>
           </p>
+
+          {!checkSupabaseConfigured() || localStorage.getItem('asvote_sandbox_mode') === 'true' ? (
+            <div className="mt-5 text-center bg-amber-500/10 dark:bg-amber-500/5 p-4 rounded-2xl border border-amber-500/20">
+              <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium mb-2.5">
+                Currently testing in <strong>Offline Demo Mode</strong> with preloaded events.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.removeItem('asvote_sandbox_mode');
+                  toast.success('Switched to Live Supabase active channel!');
+                  setTimeout(() => window.location.reload(), 600);
+                }}
+                className="w-full text-xs font-black bg-white dark:bg-slate-900 border border-amber-500/20 text-amber-900 dark:text-amber-200 hover:bg-amber-50/50 py-2 rounded-xl cursor-pointer"
+              >
+                SWAP TO LIVE SUPABASE
+              </button>
+            </div>
+          ) : (
+            <div className="mt-5 text-center bg-indigo-500/10 dark:bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/20">
+              <p className="text-[11px] text-indigo-800 dark:text-indigo-300 font-medium mb-2.5">
+                Currently connected to your <strong>Live Supabase Database</strong>.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.setItem('asvote_sandbox_mode', 'true');
+                  toast.success('Offline Demo Mode Activated safely!');
+                  setTimeout(() => window.location.reload(), 600);
+                }}
+                className="w-full text-xs font-black bg-white dark:bg-slate-900 border border-indigo-500/20 text-indigo-900 dark:text-indigo-200 hover:bg-indigo-50/50 py-2 rounded-xl cursor-pointer"
+              >
+                ACTIVATE DEMO MODE (PRELOADED DATA)
+              </button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import dotenv from "dotenv";
+import { supabase } from "./supabase";
 
 dotenv.config();
 
@@ -18,12 +19,51 @@ const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'ASVote <onboarding@resend.d
 
 export const sendTicketEmail = async (email: string, eventTitle: string, nomineeName: string | undefined, tickets: any[]) => {
   const resend = getResend();
+  
   if (!resend) {
     console.warn("RESEND_API_KEY is missing. Email skipped.");
     console.log(`[Ticket Email Simulation] To: ${email}
 Event: ${eventTitle}
 Tier: ${nomineeName || 'General'}
 Tickets:`, tickets.map((t, idx) => `\n  - Ticket #${idx + 1}: QR Code URL -> https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${t.qr_code || t.qrCode} (Code string: ${t.qr_code || t.qrCode})`).join(''));
+    
+    // Create notifications explaining unconfigured API key
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (profile) {
+        await supabase.from('notifications').insert([{
+          user_id: profile.id,
+          title: 'Tickets Secured (Email Notification Disabled) 🎟️',
+          message: `Your tickets for "${eventTitle}" have been successfully secured! Real email delivery was skipped because the server's RESEND_API_KEY is not configured. But don't worry—you can download or view your digital passes on-screen or from your profile!`,
+          type: 'warning',
+          read: false
+        }]);
+      }
+
+      // Notify admin/owner about missing settings
+      const { data: admin } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', 'adjeisikapasilas@gmail.com')
+        .maybeSingle();
+
+      if (admin && (!profile || admin.id !== profile.id)) {
+        await supabase.from('notifications').insert([{
+          user_id: admin.id,
+          title: 'Ticket Email Delivery Skipped (Unconfigured) ⚠️',
+          message: `A client (${email}) successfully bought tickets for "${eventTitle}", but the email system is skipped. To send real emails, please go to your Settings and configure the "RESEND_API_KEY" secret!`,
+          type: 'warning',
+          read: false
+        }]);
+      }
+    } catch (err: any) {
+      console.error("Failed to insert offline notifications:", err.message || err);
+    }
     return;
   }
 
@@ -44,7 +84,7 @@ Tickets:`, tickets.map((t, idx) => `\n  - Ticket #${idx + 1}: QR Code URL -> htt
       </div>
     `).join('');
 
-    await resend.emails.send({
+    const response = await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: `Your Digital Tickets for ${eventTitle}`,
@@ -64,7 +104,127 @@ Tickets:`, tickets.map((t, idx) => `\n  - Ticket #${idx + 1}: QR Code URL -> htt
         </div>
       `,
     });
-  } catch (err) {
+
+    if (response.error) {
+      throw response.error;
+    }
+  } catch (err: any) {
     console.error("Failed to send ticket email:", err);
+    
+    // Submit in-app helpful error reports for diagnostics
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (profile) {
+        await supabase.from('notifications').insert([{
+          user_id: profile.id,
+          title: 'Email Delivery Issue 🎟️',
+          message: `We secured your tickets for "${eventTitle}", but couldn't send the email dispatch to ${email}. Error: ${err.message || JSON.stringify(err)}. You can download your digital passes on-screen!`,
+          type: 'error',
+          read: false
+        }]);
+      }
+
+      // Notify developer admin about exact API failure
+      const { data: admin } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', 'adjeisikapasilas@gmail.com')
+        .maybeSingle();
+
+      if (admin && (!profile || admin.id !== profile.id)) {
+        await supabase.from('notifications').insert([{
+          user_id: admin.id,
+          title: 'Resend Email API Failure 🚨',
+          message: `Could not send ticket email to ${email} for "${eventTitle}". Resend API Error: ${err.message || JSON.stringify(err)}. If in sandbox, ensure target email is verified on Resend!`,
+          type: 'error',
+          read: false
+        }]);
+      }
+    } catch (logErr: any) {
+      console.error("Failed to insert email failure notifications:", logErr.message || logErr);
+    }
+  }
+};
+
+export const sendSupportEmail = async (name: string, email: string, subject: string, message: string) => {
+  const resend = getResend();
+  const adminEmail = 'adjeisikapasilas@gmail.com';
+
+  if (!resend) {
+    console.warn("RESEND_API_KEY is missing. Support email skipped.");
+    console.log(`[Support Email Simulation] From: ${name} (${email})
+Subject: ${subject}
+Message: ${message}`);
+
+    // Create a notification for the admin about the support ticket
+    try {
+      const { data: admin } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', adminEmail)
+        .maybeSingle();
+
+      if (admin) {
+        await supabase.from('notifications').insert([{
+          user_id: admin.id,
+          title: 'New Support Ticket Registered 🎫',
+          message: `Ticket from ${name} (${email}) - Subject: "${subject}". Message: "${message.substring(0, 100)}...". Email was simulated because RESEND_API_KEY is not configured.`,
+          type: 'info',
+          read: false
+        }]);
+      }
+    } catch (err: any) {
+      console.error("Failed to insert support notification:", err.message || err);
+    }
+    return;
+  }
+
+  try {
+    // 1. Send support notice to Admin
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: adminEmail,
+      subject: `[Support Ticket] ${subject}`,
+      html: `
+        <div style="max-width: 600px; margin: 0 auto; font-family: sans-serif; background-color: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <h2 style="color: #4f46e5; margin-top: 0;">New Support Ticket!</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Reply-To/Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <div style="background-color: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 15px; font-style: italic;">
+            ${message.replace(/\n/g, '<br />')}
+          </div>
+          <p style="font-size: 11px; color: #94a3b8; margin-top: 25px;">ASVote Help Desk System &bull; Sent automatically</p>
+        </div>
+      `
+    });
+
+    // 2. Send auto-responder guarantee to User
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: `Support Ticket Received: ${subject}`,
+      html: `
+        <div style="max-width: 600px; margin: 0 auto; font-family: sans-serif; background-color: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <h2 style="color: #4f46e5; margin-top: 0;">Support Ticket Registered!</h2>
+          <p>Hi ${name},</p>
+          <p>We have successfully registered your support ticket at our help desk. Our team reads every submission and we will contact you shortly.</p>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Your Message:</strong></p>
+          <div style="background-color: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; font-style: italic; color: #475569;">
+            ${message.replace(/\n/g, '<br />')}
+          </div>
+          <p style="font-size: 12px; color: #64748b; margin-top: 25px;">ASVote Support &bull; Empowering voters & events</p>
+        </div>
+      `
+    });
+  } catch (err: any) {
+    console.error("Failed to send support email:", err);
   }
 };

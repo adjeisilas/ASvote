@@ -6,6 +6,7 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Mail, Phone, MapPin, Loader2, Send, HelpCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import axios from '../lib/axios';
 
 export default function ContactPage() {
   const [name, setName] = useState('');
@@ -23,15 +24,26 @@ export default function ContactPage() {
 
     setIsLoading(true);
     try {
-      // Simulate ticket generation
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      toast.success('Your support ticket has been registered. Our help desk will contact you shortly.');
-      setName('');
-      setEmail('');
-      setSubject('');
-      setMessage('');
-    } catch {
-      toast.error('Failed to submit. Please check parameters.');
+      const response = await axios.post('/api/support/ticket', {
+        name,
+        email,
+        subject,
+        message
+      });
+      
+      if (response.data?.success) {
+        toast.success(response.data?.message || 'Your support ticket has been registered. Our help desk will contact you shortly.');
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+      } else {
+        throw new Error('Response did not indicate success');
+      }
+    } catch (err: any) {
+      console.error('Support submission failure:', err);
+      const serverErrMsg = err.response?.data?.error || err.message;
+      toast.error(`Submit error: ${serverErrMsg || 'Failed to dispatch ticket. Please try again.'}`);
     } finally {
       setIsLoading(false);
     }
