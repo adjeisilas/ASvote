@@ -27,6 +27,14 @@ const initializeMockData = () => {
     'activity_logs'
   ];
 
+  const migrationKey = 'asvote_mock_v3_clean';
+  if (!localStorage.getItem(migrationKey)) {
+    tables.forEach(table => {
+      localStorage.removeItem(`asvote_mock_table_${table}`);
+    });
+    localStorage.setItem(migrationKey, 'true');
+  }
+
   tables.forEach(table => {
     const key = `asvote_mock_table_${table}`;
     if (!localStorage.getItem(key)) {
@@ -55,166 +63,6 @@ const initializeMockData = () => {
             email_verified: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          }
-        ];
-      } else if (table === 'events') {
-        defaultData = [
-          {
-            id: "event-1",
-            organizer_id: "mock-organizer-id",
-            title: "National Spotlight Music Awards 2026",
-            description: "Join us in celebrating outstanding musical achievements across the nation. This prestigious voting event is curated for fans to cast unlimited secure ballots for their beloved creators across various categories with premium, fully verified real-time lead analytics.",
-            type: "voting",
-            status: "active",
-            cover_image: "https://picsum.photos/seed/vibrant/1200/600",
-            tags: ["Music", "Awards", "Fan-Vote"],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          {
-            id: "event-2",
-            organizer_id: "mock-organizer-id",
-            title: "Global AI & Web Innovation Summit",
-            description: "Experience the ultimate frontier of technology. The 2026 web summit registers elite panel speakers, immersive developer hubs, networking lunches, and immersive check-ins. Grab your premium General Admission or VIP entry ticket code today.",
-            type: "ticketing",
-            status: "active",
-            cover_image: "https://picsum.photos/seed/tech/1200/600",
-            tags: ["Tech", "AI", "Startup"],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-        ];
-      } else if (table === 'voting_events') {
-        defaultData = [
-          {
-            event_id: "event-1",
-            start_date: new Date().toISOString(),
-            end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            commission: 10,
-            voting_instructions: "Select your chosen nominee, enter your email and ticketing reference, and process the secure Paystack checkout. Each credit corresponds to one certified vote.",
-            multiple_votes_enabled: true,
-            total_votes: 1110
-          }
-        ];
-      } else if (table === 'ticketing_events') {
-        defaultData = [
-          {
-            event_id: "event-2",
-            venue: "Silicon Accra Innovation Center Complex",
-            doors_open: "08:00 AM",
-            event_time: "09:00 AM",
-            expected_end: "05:00 PM",
-            event_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            organizer_email: "support@silasevents.com",
-            organizer_phone: "+233 24 987 6543",
-            sales_start: new Date().toISOString(),
-            sales_end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-            refund_policy: "Refunds are processed up to 72 hours before opening doors.",
-            max_tickets_per_user: 10,
-            commission: 5
-          }
-        ];
-      } else if (table === 'voting_categories') {
-        defaultData = [
-          {
-            id: "cat-1",
-            event_id: "event-1",
-            name: "Vocalist of the Year",
-            description: "Celebrating outstanding solo vocal performances and exceptional lyrical delivery.",
-            vote_price: 1.5,
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "cat-2",
-            event_id: "event-1",
-            name: "Next-Gen Producer of the Year",
-            description: "Recognizing visionary engineering and outstanding sound architecture in hit releases.",
-            vote_price: 1.0,
-            created_at: new Date().toISOString()
-          }
-        ];
-      } else if (table === 'ticket_tiers') {
-        defaultData = [
-          {
-            id: "tier-1",
-            event_id: "event-2",
-            name: "General Delegate Pass",
-            description: "Provides full access to all developer keynotes, tech presentations, exhibition stalls, and refreshments.",
-            price: 50.0,
-            capacity: 500,
-            sold_count: 32,
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "tier-2",
-            event_id: "event-2",
-            name: "VIP Networking Gold Pass",
-            description: "All access plus masterclass workshops, gourmet luncheon with delegates, and limited summit merchandise swag packs.",
-            price: 150.0,
-            capacity: 80,
-            sold_count: 14,
-            created_at: new Date().toISOString()
-          }
-        ];
-      } else if (table === 'nominees') {
-        defaultData = [
-          {
-            id: "nom-1",
-            category_id: "cat-1",
-            event_id: "event-1",
-            name: "Aria Sterling",
-            code: "ARIA",
-            image_url: "https://picsum.photos/seed/aria/400/400",
-            description: "Neo-soul genius whose latest acoustic album spent 6 consecutive weeks riding the top billboards.",
-            vote_count: 640,
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "nom-2",
-            category_id: "cat-1",
-            event_id: "event-1",
-            name: "Gabriel Cross",
-            code: "GABRIEL",
-            image_url: "https://picsum.photos/seed/gabriel/400/400",
-            description: "High-octane alternative rock frontman celebrated for magnificent arena presence.",
-            vote_count: 470,
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "nom-3",
-            category_id: "cat-2",
-            event_id: "event-1",
-            name: "Neon Pulse (DJ)",
-            code: "NEON",
-            image_url: "https://picsum.photos/seed/noon/400/400",
-            description: "Pioneering producer who crafted three platinum synthwave viral sensation hits.",
-            vote_count: 230,
-            created_at: new Date().toISOString()
-          },
-          {
-            id: "nom-4",
-            category_id: "cat-2",
-            event_id: "event-1",
-            name: "Sienna Wood",
-            code: "SIENNA",
-            image_url: "https://picsum.photos/seed/sienna/400/400",
-            description: "Folk orchestral producer whose organic string mixes won international engineering acclaim.",
-            vote_count: 180,
-            created_at: new Date().toISOString()
-          }
-        ];
-      } else if (table === 'promo_codes') {
-        defaultData = [
-          {
-            id: "promo-1",
-            event_id: "event-2",
-            code: "AISUMMIT10",
-            discount_type: "percentage",
-            discount_value: 10,
-            usage_limit: 100,
-            usage_count: 0,
-            expiry_date: new Date(Date.now() + 10 * 24 * 3600 * 1000).toISOString(),
-            is_active: true
           }
         ];
       } else if (table === 'notifications') {

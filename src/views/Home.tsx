@@ -23,24 +23,10 @@ export default function Home() {
 
   const fallbackSlides = [
     {
-      id: 'fallback-1',
-      title: 'Ghana Youth Leaders & Professional Awards',
-      description: 'Vote for your favorite young leaders making an impact.',
-      coverImage: 'https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000',
-      type: 'voting' as const,
-      status: 'active' as const,
-      organizerId: 'system',
-      categoryIds: [],
-      startDate: new Date(),
-      endDate: new Date(Date.now() + 86400000 * 30),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: 'fallback-2',
-      title: 'Web Developer of the Year 2026',
-      description: 'The premier competition for modern software engineers.',
-      coverImage: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1000',
+      id: 'fallback-system',
+      title: 'Host Your First Event',
+      description: 'Create and launch highly customized live voting campaigns and secure ticketing experiences on ASVote.',
+      coverImage: '',
       type: 'voting' as const,
       status: 'active' as const,
       organizerId: 'system',
@@ -221,11 +207,38 @@ export default function Home() {
                       >
                         <div className="bg-card p-3.5 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-border/80 relative overflow-hidden transition-all duration-700 h-full flex flex-col hover:shadow-[0_48px_80px_-24px_rgba(79,70,229,0.12)] hover:-translate-y-1">
                           <div className="relative flex-1 overflow-hidden rounded-2xl w-full h-full">
-                            <img 
-                              src={featuredEvent.coverImage || "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000"} 
-                              alt={featuredEvent.title} 
-                              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                            />
+                            {isUsingFallbacks ? (
+                              <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex flex-col justify-between p-8 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
+                                <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-blue-600/5 rounded-full blur-3xl"></div>
+                                
+                                <div className="flex justify-between items-start z-10 w-full">
+                                  <div className="bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-md">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                                    <span className="text-[9px] font-black tracking-widest text-indigo-300 uppercase">ASVote System</span>
+                                  </div>
+                                  <Trophy size={18} className="text-indigo-400/80" />
+                                </div>
+
+                                <div className="z-10 text-left">
+                                  <Badge className="bg-indigo-650 border-none text-white px-2.5 py-0.5 rounded-md font-black text-[9px] uppercase tracking-wider mb-3">
+                                    Campaign Hub
+                                  </Badge>
+                                  <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-tight mb-2 uppercase">
+                                    Ready for Impact
+                                  </h3>
+                                  <p className="text-xs text-slate-300 font-medium leading-relaxed max-w-sm">
+                                    Build custom live voting tracks and premium digital admissions with real-time analytics and high integrity.
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <img 
+                                src={featuredEvent.coverImage || "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000"} 
+                                alt={featuredEvent.title} 
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                              />
+                            )}
                             
                             {/* Floating Real-Time Verifiable Hub Badge */}
                             {!isUsingFallbacks && (
@@ -476,93 +489,27 @@ export default function Home() {
             })}
           </div>
         ) : (
-          /* Fallback Events standard design */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto justify-items-center">
-            {fallbackSlides.map((event, index) => {
-              const isVote = event.type === 'voting';
-              return (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05, duration: 0.6 }}
-                  className="w-full max-w-[290px]"
-                >
-                  <Card className="group h-[450px] overflow-hidden border border-border/80 bg-card hover:border-indigo-550/30 hover:shadow-[0_24px_50px_-12px_rgba(79,70,229,0.08)] transition-all duration-300 rounded-3xl flex flex-col relative text-center">
-                    <div className="relative h-[190px] overflow-hidden bg-accent shrink-0">
-                      <img 
-                        src={event.coverImage} 
-                        alt={event.title} 
-                        className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.06]"
-                        referrerPolicy="no-referrer"
-                      />
-                      
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-60" />
-                      
-                      <div className="absolute top-4 left-4 z-10">
-                         <div className="bg-emerald-500/95 backdrop-blur-md text-slate-950 border border-emerald-400/20 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-pulse"></span>
-                            <span className="text-[8px] font-black uppercase tracking-widest">LIVE</span>
-                         </div>
-                      </div>
-
-                      <div className="absolute top-4 right-4 z-10">
-                        <span className="text-[8px] font-black uppercase tracking-wider bg-black/60 text-white/90 border border-white/10 px-2.5 py-1 rounded-lg">
-                          VOTING
-                        </span>
-                      </div>
-                    </div>
-                                       <div className="p-4 flex-grow flex flex-col items-center justify-between">
-                      <div className="w-full">
-                        <h3 className="text-sm font-extrabold text-foreground tracking-tight mb-1 group-hover:text-indigo-600 transition-colors uppercase line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-snug">
-                          {event.title}
-                        </h3>
-                        
-                        <div className="flex items-center justify-center gap-2 mb-2 text-muted-foreground text-[8px] font-black uppercase tracking-widest">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={10} className="text-indigo-500" />
-                            <span>{new Date(event.startDate || event.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
-                          </div>
-                          <div className="w-1 h-1 bg-border/80 rounded-full" />
-                          <div className="flex items-center gap-1 truncate max-w-[110px]">
-                            <MapPin size={10} className="text-indigo-500 shrink-0" />
-                            <span className="truncate">Global</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="w-full relative flex items-center justify-center my-1.5">
-                        <div className="absolute -left-6 w-3 h-3 bg-background border-r border-border/80 rounded-full"></div>
-                        <div className="w-full h-[1px] border-t border-dashed border-border/80"></div>
-                        <div className="absolute -right-6 w-3 h-3 bg-background border-l border-border/80 rounded-full"></div>
-                      </div>
-
-                      <div className="w-full">
-                        <div className="flex items-center justify-between w-full mb-3 px-1">
-                           <div className="text-left">
-                              <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">Camp Status</p>
-                              <Badge variant="outline" className="text-[8px] font-extrabold px-1.5 py-0 rounded-md border-indigo-100 text-indigo-500 bg-indigo-50/10 uppercase tracking-wider">
-                                 ACTIVE
-                              </Badge>
-                           </div>
-                           <div className="text-right">
-                              <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">Closing</p>
-                              <p className="text-[9px] font-black text-rose-500 uppercase">
-                                {formatSafeDistanceToNow(event.endDate || event.updatedAt).replace('about ', '')}
-                              </p>
-                           </div>
-                        </div>
-                        
-                        <Button variant="outline" className="w-full h-9 border border-border hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-foreground font-black rounded-lg transition-all duration-300 group/btn flex items-center justify-center gap-1.5 uppercase text-[9px] tracking-widest bg-transparent">
-                          VIEW CATEGORIES <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
+          /* High-Fidelity Clean empty state for a pristine developer/production environment */
+          <div className="flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto bg-card/45 backdrop-blur-md rounded-[2.5rem] border border-border/80 shadow-md">
+            <div className="w-16 h-16 rounded-[1.2rem] bg-indigo-500/5 border border-indigo-505/10 flex items-center justify-center mb-6 text-indigo-550 shadow-inner">
+              <Calendar size={28} className="text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-xl font-extrabold tracking-tight text-foreground uppercase mb-2">No Active Events Found</h3>
+            <p className="text-muted-foreground text-xs leading-relaxed mb-8 font-semibold max-w-sm">
+              Your database is clean and ready. Sign in to your Organizer dashboard or Admin portal to create and activate pristine voting sessions or premium ticketing events!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+              <Link to="/login" className="w-full sm:w-auto">
+                <Button className="w-full bg-indigo-650 hover:bg-indigo-750 text-white font-black text-xs uppercase px-8 py-3 rounded-xl border-none">
+                  ADMIN SIGN IN
+                </Button>
+              </Link>
+              <Link to="/register" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full h-11 border border-border hover:bg-accent text-foreground font-black text-xs uppercase px-8 rounded-xl bg-transparent">
+                  REGISTER ORGANIZER
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </section>
