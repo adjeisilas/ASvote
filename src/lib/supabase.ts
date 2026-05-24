@@ -255,6 +255,7 @@ function createQueryChain(table: string) {
   };
 
   const getTableRecords = (): any[] => {
+    if (typeof window === 'undefined') return [];
     try {
       const stored = localStorage.getItem(`asvote_mock_table_${table}`);
       return stored ? JSON.parse(stored) : [];
@@ -264,7 +265,12 @@ function createQueryChain(table: string) {
   };
 
   const setTableRecords = (recs: any[]) => {
-    localStorage.setItem(`asvote_mock_table_${table}`, JSON.stringify(recs));
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(`asvote_mock_table_${table}`, JSON.stringify(recs));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const executeQuery = () => {
@@ -432,12 +438,16 @@ function createQueryChain(table: string) {
         };
       }
       if (prop === 'single') {
-        target._single = true;
-        return builderProxy;
+        return () => {
+          target._single = true;
+          return builderProxy;
+        };
       }
       if (prop === 'maybeSingle') {
-        target._maybeSingle = true;
-        return builderProxy;
+        return () => {
+          target._maybeSingle = true;
+          return builderProxy;
+        };
       }
       if (prop === 'order') {
         return (col: string, opts?: { ascending: boolean }) => {
@@ -479,7 +489,9 @@ function createQueryChain(table: string) {
 
 // Global window checking for missing keys
 export const checkSupabaseConfigured = (): boolean => {
-  if (typeof window === 'undefined') return true;
+  if (typeof window !== 'undefined' && localStorage.getItem('asvote_sandbox_mode') === 'true') {
+    return false;
+  }
   
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL);
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_ANON_KEY);
@@ -494,23 +506,15 @@ const getSupabaseMock = (): any => {
         getUser: () => Promise.resolve({ data: { user: null }, error: null }),
         getSession: () => Promise.resolve({ data: { session: null }, error: null }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-        signOut: () => Promise.resolve({ error: null })
+        signOut: () => Promise.resolve({ error: null }),
+        updateCurrentUser: () => Promise.resolve({ data: { user: null }, error: null })
       },
-      from: () => ({
-        select: () => ({
-          eq: () => ({
-            order: () => Promise.resolve({ data: [], error: null }),
-            single: () => Promise.resolve({ data: null, error: null }),
-            maybeSingle: () => Promise.resolve({ data: null, error: null })
-          }),
-          order: () => Promise.resolve({ data: [], error: null })
-        }),
-        insert: () => Promise.resolve({ data: [], error: null }),
-        update: () => Promise.resolve({ data: [], error: null }),
-        delete: () => Promise.resolve({ data: [], error: null })
-      }),
+      from(table: string) {
+        return createQueryChain(table);
+      },
       rpc: () => Promise.resolve({ data: null, error: null }),
-      channel: () => ({ on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }) })
+      channel: () => ({ on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }) }),
+      removeChannel() {}
     };
   }
 
@@ -606,6 +610,48 @@ const getSupabaseMock = (): any => {
         };
 
         return { data: { user, session: null }, error: null };
+      },
+      async signInWithOAuth({ provider, options }: any) {
+        if (provider === 'google') {
+          const profilesString = localStorage.getItem('asvote_mock_table_profiles') || '[]';
+          const profiles = JSON.parse(profilesString);
+          
+          let googleUser = profiles.find((p: any) => p.email === 'google-demo@asvote.com');
+          if (!googleUser) {
+            googleUser = {
+              id: 'profile-google-mock',
+              email: 'google-demo@asvote.com',
+              role: 'organizer',
+              display_name: 'Silas Google Demo',
+              phone_number: '+1 555-google-mock',
+              status: 'approved',
+              email_verified: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            };
+            profiles.push(googleUser);
+            localStorage.setItem('asvote_mock_table_profiles', JSON.stringify(profiles));
+          }
+
+          const userObj = {
+            id: googleUser.id,
+            email: googleUser.email,
+            user_metadata: {
+              className: 'mock-google-user',
+              full_name: googleUser.display_name,
+              name: googleUser.display_name,
+              avatar_url: 'https://lh3.googleusercontent.com/a/default-user',
+              role: googleUser.role
+            }
+          };
+
+          localStorage.setItem('asvote_mock_user', JSON.stringify(userObj));
+          const session = { user: userObj, access_token: 'mock-google-jwt-token' };
+          
+          notifyListeners('SIGNED_IN', session);
+          return { data: { provider: 'google', url: options?.redirectTo || window.location.origin }, error: null };
+        }
+        return { data: null, error: { message: "Supported mock provider is google" } };
       },
       async signInWithPassword({ email, password }: any) {
         const profilesString = localStorage.getItem('asvote_mock_table_profiles') || '[]';

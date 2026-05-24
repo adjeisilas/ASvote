@@ -23,9 +23,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function fetchProfile(uid: string) {
+  async function fetchProfile(uid: string, fallbackUser?: SupabaseUser | null) {
     try {
-      const profile = await databaseService.getUserProfile(uid);
+      let profile = await databaseService.getUserProfile(uid);
+      
+      const activeUser = fallbackUser || supabaseUser;
+      if (!profile && activeUser) {
+        console.log('No database profile found for authenticated user, creating default profile...');
+        const email = activeUser.email || '';
+        const displayName = activeUser.user_metadata?.full_name || activeUser.user_metadata?.name || activeUser.user_metadata?.displayName || email.split('@')[0] || 'Google User';
+        
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert([{
+            id: uid,
+            email: email,
+            role: 'organizer',
+            display_name: displayName,
+            phone_number: activeUser.phone || '',
+            status: 'approved', // Google sign-ups are auto-approved to provide friction-free onboarding
+            email_verified: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }]);
+          
+        if (!insertError) {
+          profile = await databaseService.getUserProfile(uid);
+        } else {
+          console.error('Failed to create user profile dynamically:', insertError);
+        }
+      }
+
       if (profile) {
         setUser(profile as User);
       } else {
@@ -41,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (supabaseUser) {
-      await fetchProfile(supabaseUser.id);
+      await fetchProfile(supabaseUser.id, supabaseUser);
     }
   };
 
@@ -59,9 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
         
-        setSupabaseUser(session?.user ?? null);
-        if (session?.user) {
-          fetchProfile(session.user.id);
+        const currentUser = session?.user ?? null;
+        setSupabaseUser(currentUser);
+        if (currentUser) {
+          fetchProfile(currentUser.id, currentUser);
         } else {
           setLoading(false);
         }
@@ -76,12 +105,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let subscription: any = null;
     try {
       const result = supabase.auth.onAuthStateChange(async (event, session) => {
-        setSupabaseUser(session?.user ?? null);
+        const currentUser = session?.user ?? null;
+        setSupabaseUser(currentUser);
         if (event === 'PASSWORD_RECOVERY') {
           sessionStorage.setItem('is_recovering_password', 'true');
         }
-        if (session?.user) {
-          fetchProfile(session.user.id);
+        if (currentUser) {
+          fetchProfile(currentUser.id, currentUser);
         } else {
           setUser(null);
           setLoading(false);
