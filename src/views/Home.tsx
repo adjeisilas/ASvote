@@ -113,7 +113,7 @@ export default function Home() {
   return (
     <div className="bg-background selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-300">
       {/* Hero Section - Refined with elegant gradients and glassmorphism */}
-      <section className="relative min-h-[92vh] flex items-center pt-10 md:pt-16 pb-6 overflow-hidden">
+      <section className="relative min-h-0 md:min-h-[92vh] flex items-start md:items-center pt-0 md:pt-16 pb-0 md:pb-6 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 -z-10 pointer-events-none">
           <div className="absolute inset-0 bg-background transition-colors duration-300"></div>
@@ -127,8 +127,8 @@ export default function Home() {
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, var(--border) 1.2px, transparent 0)', backgroundSize: '40px 40px', opacity: 0.8 }}></div>
         </div>
 
-        <div className="container mx-auto px-6 relative">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+        <div className="container mx-auto px-4 sm:px-6 relative">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
             <div className="flex-1 text-center lg:text-left max-w-3xl">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -166,8 +166,8 @@ export default function Home() {
                   </a>
                 </div>
 
-                <div className="pt-6 grid grid-cols-2 lg:flex lg:flex-wrap items-center justify-center lg:justify-start gap-3">
-                  <div className="flex items-center justify-center lg:justify-start gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                <div className="pt-4 md:pt-6 grid grid-cols-2 lg:flex lg:flex-wrap items-center justify-center lg:justify-start gap-2 md:gap-3">
+                  <div className="flex items-center justify-center lg:justify-start gap-2 md:gap-2.5 bg-card/65 dark:bg-card/40 backdrop-blur-md px-3 md:px-3.5 py-1.5 md:py-2 rounded-xl border border-border/60 shadow-xs hover:border-indigo-500/20 hover:-translate-y-0.5 transition-all duration-300 cursor-default">
                     <Shield size={14} className="text-indigo-650" />
                     <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Paystack Secure</span>
                   </div>
@@ -326,7 +326,7 @@ export default function Home() {
       </section>
 
        {/* Main Events Search and Filters - Sleek Glassmorphic Control Panel */}
-      <section className="pt-2 pb-12 container mx-auto px-6 relative z-10">
+      <section className="pt-0 md:pt-2 pb-12 container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row items-stretch justify-center gap-4 bg-card/60 backdrop-blur-xl border border-border/80 p-3 rounded-[2rem] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.06)] hover:shadow-[0_24px_48px_-12px_rgba(79,70,229,0.06)] transition-all duration-500">
              <div className="relative flex-grow group">
@@ -361,7 +361,7 @@ export default function Home() {
       </section>
 
       {/* Main Events Section */}
-      <section id="events" className="pb-24 md:pb-40 container mx-auto px-6 relative z-10">
+      <section id="events" className="pb-24 md:pb-40 container mx-auto px-4 sm:px-6 relative z-10">
         <div className="flex flex-col text-center items-center mb-16 md:mb-24">
            <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-indigo-500/5 border border-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[9px] font-extrabold uppercase tracking-[0.2em] mb-4">
              ⚡ Featured Programs
@@ -375,13 +375,13 @@ export default function Home() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
             {[1, 2, 3, 4].map(i => (
               <div key={i} className="h-[520px] bg-accent/40 border border-border animate-pulse rounded-3xl"></div>
             ))}
           </div>
         ) : filteredEvents.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto justify-items-center">
             {filteredEvents.map((event, index) => {
               const isVote = event.type === 'voting';
               const isEnded = event.endDate && new Date(event.endDate) < new Date();
@@ -535,7 +535,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293708_1px,transparent_1px),linear-gradient(to_bottom,#1f293708_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
         </div>
 
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
            <div className="max-w-6xl mx-auto mb-20 md:mb-28">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-24 items-end">
                 <motion.div
@@ -590,7 +590,7 @@ export default function Home() {
 
       {/* CTA Section - Bold Editorial Modern Display */}
       <section className="py-24 md:py-40 bg-background overflow-hidden relative">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 sm:px-6">
            <div className="relative">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[120%] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none"></div>
               
