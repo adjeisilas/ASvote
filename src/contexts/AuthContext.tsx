@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             role: 'organizer',
             display_name: displayName,
             phone_number: activeUser.phone || '',
-            status: 'approved', // Google sign-ups are auto-approved to provide friction-free onboarding
+            status: 'pending', // Google sign-ups start as pending and require administrator appraisal
             email_verified: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()

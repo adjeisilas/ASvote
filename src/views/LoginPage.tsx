@@ -6,8 +6,9 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { KeyRound, Mail, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { KeyRound, Mail, ArrowRight, Loader2, ShieldCheck, Clock, XCircle, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '../lib/utils';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -16,12 +17,12 @@ export default function LoginPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if logged in already
+  // Redirect if logged in already (only if approved organizer or admin)
   React.useEffect(() => {
     if (user) {
       if (user.role === 'admin') {
         navigate('/admin');
-      } else {
+      } else if (user.role === 'organizer' && user.status === 'approved') {
         navigate('/organizer');
       }
     }
@@ -79,6 +80,68 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  if (user && user.role === 'organizer' && user.status !== 'approved') {
+    const isPending = user.status === 'pending';
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20 animate-in fade-in duration-500">
+        <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-[2rem] overflow-hidden p-6 md:p-8">
+          <CardHeader className="space-y-1.5 pb-6 text-center">
+            <div className={cn(
+              "mx-auto w-12 h-12 rounded-2xl flex items-center justify-center mb-2",
+              isPending ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+            )}>
+              {isPending ? <Clock className="w-6 h-6 animate-pulse" /> : <XCircle className="w-6 h-6" />}
+            </div>
+            <CardTitle className="text-2xl font-black text-foreground tracking-tight">
+              {isPending ? 'Approval Pending' : 'Application Rejected'}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">
+              {isPending 
+                ? 'Your registration has been initiated successfully' 
+                : 'Decision on your application profile'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5 pb-2">
+            <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-border/70 text-center">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Company / Display Name</span>
+              <p className="text-foreground font-black text-sm">{user.displayName || 'Google User'}</p>
+              <p className="text-xs text-slate-500 font-mono mt-0.5">{user.email}</p>
+            </div>
+
+            <p className="text-xs text-center leading-relaxed text-slate-500 dark:text-slate-400">
+              {isPending ? (
+                <>
+                  Your request to access the organizer panel is currently under review by our administrative team. 
+                  We must assess and verify your organization details before you can begin launching public digital currency payments.
+                  Please check back later or reply to any notification prompts we send.
+                </>
+              ) : (
+                <>
+                  Your request has been set to <b>Rejected</b> by our administrator team due to validation criteria. 
+                  For assistance, please contact <b>support@asvotes.com</b> or call <b>+233247558915</b>.
+                </>
+              )}
+            </p>
+
+            <div className="pt-2 flex flex-col gap-3">
+              <Button
+                variant="outline"
+                className="w-full h-11 border-border bg-background hover:bg-slate-100 dark:hover:bg-slate-900 font-bold rounded-xl transition-all text-xs uppercase cursor-pointer flex items-center justify-center gap-2 text-rose-500 hover:text-rose-600 border border-red-500/10 hover:border-red-500/35"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  window.location.reload();
+                }}
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out / Change Account
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
