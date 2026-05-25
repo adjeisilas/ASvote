@@ -21,38 +21,6 @@ export default function RegisterPage() {
   const handleGoogleSignUp = async () => {
     setIsLoading(true);
     try {
-      const isIframe = typeof window !== 'undefined' && (window.self !== window.top || window.location.search.includes('showPreview=true'));
-      
-      if (isIframe) {
-        // Activate sandbox mode for the iframe to bypass Google's cross-origin frame restriction (X-Frame-Options DENY)
-        localStorage.setItem('asvote_sandbox_mode', 'true');
-        
-        // Let the proxy know it's in sandbox mode, and trigger the mock sign-in handler
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/`,
-          }
-        });
-        
-        toast.success('Google Registration: Sandboxed preview iframe detected. Created Google profile and logged in under Silas Google Demo. (For live Google signup, test in a new tab)');
-        return;
-      }
-
-      const isConfigured = checkSupabaseConfigured();
-      if (!isConfigured) {
-        // Mock client handles storing local mock user and triggers session refresh automatically
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/`,
-          }
-        });
-        toast.success('Successfully registered & logged in via Google (Demo Mode).');
-        return;
-      }
-
-      // Live Supabase OAuth integration (handles both sign-in and sign-up dynamically)
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

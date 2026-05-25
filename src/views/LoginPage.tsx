@@ -65,38 +65,6 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const isIframe = typeof window !== 'undefined' && (window.self !== window.top || window.location.search.includes('showPreview=true'));
-      
-      if (isIframe) {
-        // Activate sandbox mode for the iframe to bypass Google's cross-origin frame restriction (X-Frame-Options DENY)
-        localStorage.setItem('asvote_sandbox_mode', 'true');
-        
-        // Let the proxy know it's in sandbox mode, and trigger the mock sign-in handler
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/`,
-          }
-        });
-        
-        toast.success('Google Login: Sandboxed preview iframe detected. Logged in instantly with Silas Google Demo. (For live Google redirects, test the app in a new tab)');
-        return;
-      }
-
-      const isConfigured = checkSupabaseConfigured();
-      if (!isConfigured) {
-        // Mock client handles storing local mock user and triggers session refresh
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/`,
-          }
-        });
-        toast.success('Successfully logged in via Google (Demo Mode).');
-        return;
-      }
-
-      // Live Supabase OAuth integration
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -216,48 +184,12 @@ export default function LoginPage() {
             Google account
           </Button>
 
-          <p className="mt-8 text-center text-xs text-slate-500 font-medium pb-2 border-b border-border/80">
+          <p className="mt-8 text-center text-xs text-slate-500 font-medium pb-2">
             Don't have an ASVote account?{' '}
             <Link to="/register" className="text-indigo-600 font-bold hover:text-indigo-700 hover:underline">
               Register as Organizer
             </Link>
           </p>
-
-          {!checkSupabaseConfigured() || localStorage.getItem('asvote_sandbox_mode') === 'true' ? (
-            <div className="mt-5 text-center bg-amber-500/10 dark:bg-amber-500/5 p-4 rounded-2xl border border-amber-500/20">
-              <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium mb-2.5">
-                Currently testing in <strong>Offline Demo Mode</strong> with preloaded events.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  localStorage.removeItem('asvote_sandbox_mode');
-                  toast.success('Switched to Live Supabase active channel!');
-                  setTimeout(() => window.location.reload(), 600);
-                }}
-                className="w-full text-xs font-black bg-white dark:bg-slate-900 border border-amber-500/20 text-amber-900 dark:text-amber-200 hover:bg-amber-50/50 py-2 rounded-xl cursor-pointer"
-              >
-                SWAP TO LIVE SUPABASE
-              </button>
-            </div>
-          ) : (
-            <div className="mt-5 text-center bg-indigo-500/10 dark:bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/20">
-              <p className="text-[11px] text-indigo-800 dark:text-indigo-300 font-medium mb-2.5">
-                Currently connected to your <strong>Live Supabase Database</strong>.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  localStorage.setItem('asvote_sandbox_mode', 'true');
-                  toast.success('Offline Demo Mode Activated safely!');
-                  setTimeout(() => window.location.reload(), 600);
-                }}
-                className="w-full text-xs font-black bg-white dark:bg-slate-900 border border-indigo-500/20 text-indigo-900 dark:text-indigo-200 hover:bg-indigo-50/50 py-2 rounded-xl cursor-pointer"
-              >
-                ACTIVATE DEMO MODE (PRELOADED DATA)
-              </button>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>
