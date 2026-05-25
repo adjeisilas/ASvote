@@ -169,7 +169,7 @@ export default function Events() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="h-[480px] bg-accent/40 dark:bg-zinc-950/40 border border-border/50 animate-pulse rounded-[2rem]"></div>
+              <div key={i} className="h-[390px] bg-accent/40 dark:bg-zinc-950/40 border border-border/50 animate-pulse rounded-[2rem]"></div>
             ))}
           </div>
         ) : filteredEvents.length > 0 ? (
@@ -191,8 +191,8 @@ export default function Events() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
                   >
-                    <Card className="group w-[290px] h-[450px] overflow-hidden border border-border bg-card hover:border-indigo-500/50 hover:shadow-xl transition-all duration-300 rounded-2xl flex flex-col relative text-center shrink-0">
-                      <div className="relative h-[190px] overflow-hidden bg-accent shrink-0">
+                    <Card className="group w-[290px] h-[390px] overflow-hidden border border-border bg-card hover:border-indigo-500/50 hover:shadow-xl transition-all duration-300 rounded-2xl flex flex-col relative text-center shrink-0">
+                      <div className="relative h-[180px] overflow-hidden bg-accent shrink-0">
                         {event.coverImage ? (
                           <img 
                             src={event.coverImage} 
@@ -209,12 +209,12 @@ export default function Events() {
                         {/* Status Badge */}
                         <div className="absolute top-3 left-3">
                            {isEnded ? (
-                             <div className="bg-rose-600 text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                             <div className="bg-rose-600 text-white px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-md">
                                 <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                                 <span className="text-[9px] font-black uppercase tracking-wider">ENDED</span>
                              </div>
                            ) : (
-                             <div className="bg-[#4ADE80] text-white px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                             <div className="bg-[#4ADE80] text-white px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-md">
                                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                                 <span className="text-[9px] font-black uppercase tracking-wider">LIVE</span>
                              </div>
@@ -222,13 +222,13 @@ export default function Events() {
                         </div>
                       </div>
 
-                      <div className="p-4 flex-grow flex flex-col items-center justify-between w-full">
+                      <div className="p-3 pt-2.5 pb-3 flex-grow flex flex-col items-center justify-between w-full">
                         <div className="w-full">
-                          <h3 className="text-sm font-black text-foreground tracking-tight mb-1 group-hover:text-indigo-600 transition-colors uppercase line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-tight">
+                          <h3 className="text-xs font-black text-foreground tracking-tight mb-1 group-hover:text-indigo-600 transition-colors uppercase line-clamp-2 min-h-[2.2rem] flex items-center justify-center leading-tight">
                             {event.title}
                           </h3>
                           
-                          <div className="flex items-center justify-center gap-2 mb-2 text-muted-foreground text-[8px] font-black uppercase tracking-widest">
+                          <div className="flex items-center justify-center gap-2 mb-1 text-muted-foreground text-[8px] font-black uppercase tracking-widest">
                             <div className="flex items-center gap-1">
                               <Calendar size={10} className="text-indigo-500" />
                               <span>{new Date(event.startDate || event.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
@@ -240,10 +240,10 @@ export default function Events() {
                           </div>
                         </div>
 
-                        <div className="w-full h-px bg-border mb-2.5 opacity-50"></div>
+                        <div className="w-full h-px bg-border my-1 opacity-50"></div>
 
                         <div className="w-full">
-                          <div className="flex items-center justify-between w-full mb-3 px-1">
+                          <div className="flex items-center justify-between w-full mb-2 px-1">
                              <div className="text-left">
                                 <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0">Status</p>
                                 <p className="text-[9px] font-bold text-foreground uppercase">{event.status}</p>
@@ -255,7 +255,7 @@ export default function Events() {
                           </div>
                           
                           <Link to={`/event/${slugify(event.title)}`} className="w-full mt-auto block">
-                            <Button variant="outline" className="w-full h-9 border border-border hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-foreground font-bold rounded-lg transition-all group/btn flex items-center justify-center gap-1.5 uppercase text-[9px] tracking-widest bg-transparent">
+                            <Button variant="outline" className="w-full h-8 border border-border hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-foreground font-bold rounded-lg transition-all group/btn flex items-center justify-center gap-1.5 uppercase text-[9px] tracking-widest bg-transparent">
                               {isVoting ? 'VOTE' : 'TICKETS'} <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
                             </Button>
                           </Link>

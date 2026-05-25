@@ -377,7 +377,7 @@ export default function Home() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-[520px] bg-accent/40 border border-border animate-pulse rounded-3xl"></div>
+              <div key={i} className="h-[390px] bg-accent/40 border border-border animate-pulse rounded-3xl"></div>
             ))}
           </div>
         ) : filteredEvents.length > 0 ? (
@@ -394,9 +394,9 @@ export default function Home() {
                   transition={{ delay: Math.min(index * 0.05, 0.3), duration: 0.6 }}
                   className="w-full max-w-[290px]"
                 >
-                  <Card className="group h-[520px] overflow-hidden border border-border/80 bg-card hover:border-indigo-550/30 hover:shadow-[0_24px_50px_-12px_rgba(79,70,229,0.08)] transition-all duration-300 rounded-3xl flex flex-col relative text-center">
+                  <Card className="group h-[390px] overflow-hidden border border-border/80 bg-card hover:border-indigo-550/30 hover:shadow-[0_24px_50px_-12px_rgba(79,70,229,0.08)] transition-all duration-300 rounded-3xl flex flex-col relative text-center">
                     {/* Cover Frame */}
-                    <div className="relative h-[240px] overflow-hidden bg-accent shrink-0">
+                    <div className="relative h-[180px] overflow-hidden bg-accent shrink-0">
                       <img 
                         src={event.coverImage || "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=1000"} 
                         alt={event.title} 
@@ -408,14 +408,14 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-60" />
                       
                       {/* LIVE/ENDED Tag */}
-                      <div className="absolute top-4 left-4 z-10">
+                      <div className="absolute top-3 left-3 z-10">
                          {isEnded ? (
-                           <div className="bg-rose-600/90 backdrop-blur-md text-white border border-rose-500/20 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                           <div className="bg-rose-600/90 backdrop-blur-md text-white border border-rose-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                               <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                               <span className="text-[8px] font-black uppercase tracking-widest">CLOSED</span>
                            </div>
                          ) : (
-                           <div className="bg-emerald-500/95 backdrop-blur-md text-slate-950 border border-emerald-400/20 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                           <div className="bg-emerald-500/95 backdrop-blur-md text-slate-950 border border-emerald-400/20 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                               <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-pulse"></span>
                               <span className="text-[8px] font-black uppercase tracking-widest">LIVE</span>
                            </div>
@@ -423,21 +423,21 @@ export default function Home() {
                       </div>
 
                       {/* Event Type Badge at top right */}
-                      <div className="absolute top-4 right-4 z-10">
-                        <span className="text-[8px] font-black uppercase tracking-wider bg-black/60 text-white/90 border border-white/10 px-2.5 py-1 rounded-lg">
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className="text-[8px] font-black uppercase tracking-wider bg-black/60 text-white/90 border border-white/10 px-2 py-0.5 rounded-md">
                           {isVote ? 'VOTING' : 'TICKETS'}
                         </span>
                       </div>
                     </div>
                     
                     {/* Card Content stub */}
-                    <div className="p-4 flex-grow flex flex-col items-center justify-between">
+                    <div className="p-3 pt-2.5 pb-3 flex-grow flex flex-col items-center justify-between">
                       <div className="w-full">
-                        <h3 className="text-sm font-extrabold text-foreground tracking-tight mb-1 group-hover:text-indigo-600 transition-colors uppercase line-clamp-2 min-h-[2.5rem] flex items-center justify-center leading-snug">
+                        <h3 className="text-xs font-extrabold text-foreground tracking-tight mb-1 group-hover:text-indigo-600 transition-colors uppercase line-clamp-2 min-h-[2.2rem] flex items-center justify-center leading-snug">
                           {event.title}
                         </h3>
                         
-                        <div className="flex items-center justify-center gap-2 mb-2 text-muted-foreground text-[8px] font-black uppercase tracking-widest">
+                        <div className="flex items-center justify-center gap-2 mb-1 text-muted-foreground text-[8px] font-black uppercase tracking-widest">
                           <div className="flex items-center gap-1">
                             <Calendar size={10} className="text-indigo-500" />
                             <span>{new Date(event.startDate || event.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
@@ -451,14 +451,14 @@ export default function Home() {
                       </div>
 
                       {/* Separation Notched Line */}
-                      <div className="w-full relative flex items-center justify-center my-1.5">
-                        <div className="absolute -left-6 w-3 h-3 bg-background border-r border-border/80 rounded-full"></div>
+                      <div className="w-full relative flex items-center justify-center my-1">
+                        <div className="absolute -left-5 w-2.5 h-2.5 bg-background border-r border-border/80 rounded-full"></div>
                         <div className="w-full h-[1px] border-t border-dashed border-border/80"></div>
-                        <div className="absolute -right-6 w-3 h-3 bg-background border-l border-border/80 rounded-full"></div>
+                        <div className="absolute -right-5 w-2.5 h-2.5 bg-background border-l border-border/80 rounded-full"></div>
                       </div>
 
                       <div className="w-full">
-                        <div className="flex items-center justify-between w-full mb-3 px-1">
+                        <div className="flex items-center justify-between w-full mb-2 px-1">
                            <div className="text-left">
                               <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">Camp Status</p>
                               <Badge variant="outline" className={cn("text-[8px] font-extrabold px-1.5 py-0 rounded-md uppercase tracking-wider", isEnded ? "border-rose-200 text-rose-500 bg-rose-50/10" : "border-indigo-100 text-indigo-500 bg-indigo-50/10")}>
@@ -481,7 +481,7 @@ export default function Home() {
                         <Link to={`/event/${slugify(event.title)}`} className="w-full block">
                           <Button 
                             variant="outline" 
-                            className="w-full h-9 border border-border hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-foreground font-black rounded-lg transition-all duration-300 group/btn flex items-center justify-center gap-1.5 uppercase text-[9px] tracking-widest bg-transparent"
+                            className="w-full h-8 border border-border hover:border-indigo-600 hover:bg-indigo-600 hover:text-white text-foreground font-black rounded-lg transition-all duration-300 group/btn flex items-center justify-center gap-1.5 uppercase text-[9px] tracking-widest bg-transparent"
                           >
                             {isEnded ? 'VIEW RESULTS' : (isVote ? 'VOTE' : 'GET TICKETS')} 
                             <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
