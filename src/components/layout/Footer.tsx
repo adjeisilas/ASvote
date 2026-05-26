@@ -9,6 +9,7 @@ import {
   Share2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
 export default function Footer() {
   return (
@@ -42,20 +43,22 @@ export default function Footer() {
           {/* Brand Presentation Column */}
           <div className="lg:col-span-5 space-y-6">
             <Link to="/" className="inline-flex items-center gap-3 group">
-              <div className="bg-indigo-600 p-2.5 rounded-xl group-hover:rotate-6 group-hover:scale-105 shadow-lg shadow-indigo-600/20 transition-all duration-300">
-                <Vote className="w-5.5 h-5.5 text-white" />
+              <div className="bg-white rounded-xl group-hover:rotate-6 group-hover:scale-105 shadow-lg shadow-indigo-600/20 transition-all duration-300">
+                <img
+              src={(logo as { src: string }).src}
+              alt="ASVote Logo"
+              className="w-8 h-8 object-contain"
+            />
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">AS<span className="text-indigo-500">Vote</span></span>
+              <span className="text-2xl font-black tracking-tighter text-white">AS<span className="text-indigo-500">Votes</span></span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm font-medium">
               The world's most trusted decentralized platform for high-integrity digital voting campaigns, secure poll management, and premium ticket distribution. Built for modern event creators and elite organizations.
             </p>
             <div className="flex gap-3 pt-2">
               {[
-                { icon: <Globe size={16} />, href: "#", label: "Website" },
-                { icon: <Mail size={16} />, href: "mailto:hello@asvote.io", label: "Email" },
-                { icon: <MessageSquare size={16} />, href: "#", label: "Support Chat" },
-                { icon: <Share2 size={16} />, href: "#", label: "Share" }
+                { icon: <Globe size={16} />, href: "https://asvotes.com", label: "Website" },
+                { icon: <Mail size={16} />, href: "mailto:support@asvote.com", label: "Email" }
               ].map((social, i) => (
                 <a 
                   key={i} 
@@ -79,7 +82,7 @@ export default function Footer() {
               {[
                 { label: 'Voting Explorer', to: '/events' },
                 { label: 'Ticket Marketplace', to: '/events' },
-                { label: 'About ASVote', to: '/about' },
+                { label: 'About ASVotes', to: '/about' },
                 { label: 'Contact Us', to: '/contact' }
               ].map((link, i) => (
                 <li key={i}>
@@ -129,11 +132,11 @@ export default function Footer() {
             <ul className="space-y-4 font-semibold text-sm">
               <li className="flex items-start gap-3 text-slate-400">
                 <MapPin size={16} className="text-indigo-500 shrink-0 mt-0.5" />
-                <span className="leading-relaxed">A41 Innovation Drive,<br />Tech City, Accra, Ghana</span>
+                <span className="leading-relaxed">Accra, Ghana</span>
               </li>
               <li className="flex items-center gap-3 text-slate-400">
                 <Mail size={16} className="text-indigo-500 shrink-0" />
-                <a href="mailto:hello@asvote.io" className="hover:text-white transition-colors duration-200">hello@asvote.io</a>
+                <a href="mailto:support@asvote.com" className="hover:text-white transition-colors duration-200">support@asvote.com</a>
               </li>
               <li className="flex items-center gap-3 text-slate-400">
                 <Phone size={16} className="text-indigo-500 shrink-0" />
@@ -146,7 +149,7 @@ export default function Footer() {
         {/* Compliance, Security Certifications, & Copyright info */}
         <div className="pt-8 text-center text-xs font-semibold">
           <p className="text-slate-600 font-bold uppercase tracking-wider text-[11px]">
-            © {new Date().getFullYear()} ASVote Global. All Rights Reserved.
+            © {new Date().getFullYear()} ASVotes. All Rights Reserved.
           </p>
         </div>
       </div>

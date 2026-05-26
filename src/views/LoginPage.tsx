@@ -10,6 +10,7 @@ import { KeyRound, Mail, ArrowRight, Loader2, ShieldCheck, Clock, XCircle, LogOu
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { databaseService } from '../services/database';
+import logo from '../assets/logo.png';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -256,11 +257,15 @@ export default function LoginPage() {
       <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
           <div className="mx-auto flex items-center justify-center gap-2.5 mb-2">
-            <div className="bg-indigo-600 p-2.5 rounded-xl shadow-md shadow-indigo-600/20 text-white">
-              <Vote size={24} />
+            <div className=" rounded-xl shadow-md shadow-indigo-600/20 text-white">
+              <img
+              src={(logo as { src: string }).src}
+              alt="ASVote Logo"
+              className="w-8 h-8 object-contain"
+            />
             </div>
             <span className="text-xl font-black tracking-tighter text-foreground uppercase">
-              AS<span className="text-indigo-500">Vote</span>
+              AS<span className="text-indigo-500">Votes</span>
             </span>
           </div>
           <CardTitle className="text-2xl font-black text-foreground tracking-tight">Welcome Back</CardTitle>
