@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { PlusCircle, Mail, User, Info, Loader2, Phone } from 'lucide-react';
+import { PlusCircle, Mail, User, Info, Loader2, Phone, Vote } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
@@ -97,8 +97,13 @@ export default function RegisterPage() {
     <div className="min-h-[85vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
       <Card className="w-full max-w-lg border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
-            <PlusCircle size={28} />
+          <div className="mx-auto flex items-center justify-center gap-2.5 mb-2">
+            <div className="bg-indigo-600 p-2.5 rounded-xl shadow-md shadow-indigo-600/20 text-white">
+              <Vote size={24} />
+            </div>
+            <span className="text-xl font-black tracking-tighter text-foreground uppercase">
+              AS<span className="text-indigo-500">Vote</span>
+            </span>
           </div>
           <CardTitle className="text-2xl font-black text-foreground tracking-tight">Become an Organizer</CardTitle>
           <CardDescription className="text-muted-foreground text-sm">

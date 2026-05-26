@@ -15,7 +15,10 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, role }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, supabaseUser } = useAuth();
+  const avatarUrl = supabaseUser?.user_metadata?.avatar_url || 
+                    supabaseUser?.user_metadata?.picture || 
+                    `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user?.displayName || 'User')}&backgroundColor=4f46e5&color=fff&bold=true`;
 
   return (
     <div className="flex min-h-screen bg-background font-sans transition-colors duration-300">
@@ -111,8 +114,13 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
                   <span className="text-sm font-black text-foreground tracking-tight">{user?.displayName}</span>
                   <span className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">{user?.role}</span>
                 </div>
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-xs md:text-sm shadow-lg shadow-indigo-500/20 transform transition-transform hover:rotate-6">
-                  {user?.displayName?.charAt(0) || 'U'}
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-indigo-600 overflow-hidden flex items-center justify-center text-white font-black text-xs md:text-sm shadow-lg shadow-indigo-500/20 transform transition-transform hover:rotate-6">
+                  <img 
+                    src={avatarUrl} 
+                    referrerPolicy="no-referrer"
+                    alt={user?.displayName || 'User'} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>

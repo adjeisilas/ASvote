@@ -39,7 +39,10 @@ interface MenuSection {
 
 export default function Sidebar({ role, className, hideBrand, onItemClick }: SidebarProps) {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, supabaseUser } = useAuth();
+  const avatarUrl = supabaseUser?.user_metadata?.avatar_url || 
+                    supabaseUser?.user_metadata?.picture || 
+                    `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user?.displayName || 'User')}&backgroundColor=4f46e5&color=fff&bold=true`;
 
   const adminSections: MenuSection[] = [
     {
@@ -141,10 +144,13 @@ export default function Sidebar({ role, className, hideBrand, onItemClick }: Sid
         <div className="absolute right-0 top-0 h-16 w-16 bg-gradient-to-bl from-indigo-500/10 to-transparent rounded-bl-full pointer-events-none opacity-50"></div>
         <div className="flex items-center gap-3 relative z-10">
           <div className="relative">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 p-[2px] shadow-sm">
-              <div className="w-full h-full bg-white dark:bg-slate-900 rounded-[10px] flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-black text-sm uppercase">
-                {user?.displayName?.charAt(0) || 'U'}
-              </div>
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 p-[2px] shadow-sm overflow-hidden flex items-center justify-center">
+              <img 
+                src={avatarUrl} 
+                referrerPolicy="no-referrer"
+                alt={user?.displayName || 'User'} 
+                className="w-full h-full object-cover rounded-[10px]"
+              />
             </div>
             {/* Online Status Badge Dot */}
             <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">

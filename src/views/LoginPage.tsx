@@ -6,9 +6,10 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { KeyRound, Mail, ArrowRight, Loader2, ShieldCheck, Clock, XCircle, LogOut } from 'lucide-react';
+import { KeyRound, Mail, ArrowRight, Loader2, ShieldCheck, Clock, XCircle, LogOut, Vote, User as UserIcon, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
+import { databaseService } from '../services/database';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -16,6 +17,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [pendingName, setPendingName] = useState('');
+  const [pendingPhone, setPendingPhone] = useState('');
+  const [isUpdatingPending, setIsUpdatingPending] = useState(false);
+
+  // Sync internal state with user data
+  React.useEffect(() => {
+    if (user && user.role === 'organizer' && user.status !== 'approved') {
+      setPendingName(user.displayName || '');
+      setPendingPhone((user.phoneNumber || '').split('||')[0] || user.phoneNumber || '');
+    }
+  }, [user]);
 
   // Redirect if logged in already (only if approved organizer or admin)
   React.useEffect(() => {
@@ -103,10 +116,105 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 pb-2">
-            <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-border/70 text-center">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Company / Display Name</span>
-              <p className="text-foreground font-black text-sm">{user.displayName || 'Google User'}</p>
-              <p className="text-xs text-slate-500 font-mono mt-0.5">{user.email}</p>
+            
+            {/* Display/Edit Details Panel */}
+            <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-border/70 text-center space-y-3.5">
+              <div>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Account Contact Email</span>
+                <p className="text-xs text-foreground font-mono truncate">{user.email}</p>
+              </div>
+              
+              {isPending ? (
+                <form 
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!pendingName.trim()) {
+                      toast.error('Company or Display Name is required.');
+                      return;
+                    }
+                    if (!pendingPhone.trim()) {
+                      toast.error('Telephone Number is required.');
+                      return;
+                    }
+                    setIsUpdatingPending(true);
+                    try {
+                      await databaseService.updateProfile(user.uid, {
+                        displayName: pendingName,
+                        phoneNumber: pendingPhone,
+                      });
+                      toast.success('Your profile details have been successfully updated.');
+                      // Force a page refresh to reload auth layout profile context
+                      window.location.reload();
+                    } catch (err: any) {
+                      toast.error(err.message || 'Failed to update profile.');
+                    } finally {
+                      setIsUpdatingPending(false);
+                    }
+                  }} 
+                  className="space-y-3.5 pt-1.5 border-t border-dashed border-border text-left"
+                >
+                  <p className="text-[11px] font-semibold text-center text-indigo-500 bg-indigo-500/5 px-2.5 py-1.5 rounded-lg border border-indigo-500/10 leading-normal">
+                    Please provide your Display Name and Phone Number to complete verification.
+                  </p>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="pendingName" className="text-muted-foreground font-bold text-[10px] uppercase tracking-wider">Company / Organizer Name *</Label>
+                    <div className="relative mt-0.5">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        <UserIcon size={13} />
+                      </span>
+                      <Input
+                        id="pendingName"
+                        type="text"
+                        className="pl-8.5 h-9.5 border-border bg-background text-foreground text-xs rounded-xl"
+                        placeholder="E.g., AS Media Group"
+                        value={pendingName}
+                        onChange={(e) => setPendingName(e.target.value)}
+                        disabled={isUpdatingPending}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="pendingPhone" className="text-muted-foreground font-bold text-[10px] uppercase tracking-wider">Telephone Number *</Label>
+                    <div className="relative mt-0.5">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        <Phone size={13} />
+                      </span>
+                      <Input
+                        id="pendingPhone"
+                        type="tel"
+                        className="pl-8.5 h-9.5 border-border bg-background text-foreground text-xs rounded-xl"
+                        placeholder="E.g., +233241234567"
+                        value={pendingPhone}
+                        onChange={(e) => setPendingPhone(e.target.value)}
+                        disabled={isUpdatingPending}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={isUpdatingPending}
+                    className="w-full h-9 bg-indigo-600 hover:bg-indigo-50 text-white hover:text-indigo-600 font-extrabold rounded-xl transition-all text-[11px] uppercase tracking-wider shadow-sm flex items-center justify-center gap-1.5 cursor-pointer border border-indigo-600/15"
+                  >
+                    {isUpdatingPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Profile Details'}
+                  </Button>
+                </form>
+              ) : (
+                <div className="space-y-2 pt-1 border-t border-dashed border-border">
+                  <div>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Company Name</span>
+                    <p className="text-xs text-foreground font-bold">{user.displayName || 'Google User'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Phone Number</span>
+                    <p className="text-xs text-foreground font-mono">{user.phoneNumber || 'Not provided'}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <p className="text-xs text-center leading-relaxed text-slate-500 dark:text-slate-400">
@@ -147,8 +255,13 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50/50 dark:bg-slate-950/20">
       <Card className="w-full max-w-md border border-border/80 shadow-xl shadow-slate-200/50 dark:shadow-none bg-card text-card-foreground rounded-3xl overflow-hidden p-6 md:p-8">
         <CardHeader className="space-y-1.5 pb-6 text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2">
-            <ShieldCheck size={28} />
+          <div className="mx-auto flex items-center justify-center gap-2.5 mb-2">
+            <div className="bg-indigo-600 p-2.5 rounded-xl shadow-md shadow-indigo-600/20 text-white">
+              <Vote size={24} />
+            </div>
+            <span className="text-xl font-black tracking-tighter text-foreground uppercase">
+              AS<span className="text-indigo-500">Vote</span>
+            </span>
           </div>
           <CardTitle className="text-2xl font-black text-foreground tracking-tight">Welcome Back</CardTitle>
           <CardDescription className="text-muted-foreground text-sm">

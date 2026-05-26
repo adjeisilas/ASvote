@@ -55,6 +55,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (profile) {
+        // If profile exists but lacks displayName or phoneNumber, and activeUser has metadata, auto-sync them
+        const activeUser = fallbackUser || supabaseUser;
+        if (activeUser) {
+          let needsUpdate = false;
+          const updates: any = {};
+          
+          if (!profile.displayName) {
+            const googleDisplayName = activeUser.user_metadata?.full_name || activeUser.user_metadata?.name || activeUser.user_metadata?.displayName;
+            if (googleDisplayName) {
+              profile.displayName = googleDisplayName;
+              updates.displayName = googleDisplayName;
+              needsUpdate = true;
+            }
+          }
+          
+          if (!profile.phoneNumber) {
+            const googlePhone = activeUser.phone || activeUser.user_metadata?.phone || activeUser.user_metadata?.phone_number;
+            if (googlePhone) {
+              profile.phoneNumber = googlePhone;
+              updates.phoneNumber = googlePhone;
+              needsUpdate = true;
+            }
+          }
+          
+          if (needsUpdate) {
+            try {
+              await databaseService.updateProfile(uid, updates);
+            } catch (err) {
+              console.error('Failed to auto-update profile fields:', err);
+            }
+          }
+        }
         setUser(profile as User);
       } else {
         setUser(null);

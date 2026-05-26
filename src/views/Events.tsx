@@ -79,7 +79,7 @@ export default function Events() {
       <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Header Section */}
-      <section className="relative pt-36 pb-24 md:pt-48 md:pb-36 overflow-hidden bg-slate-950">
+      <section className="relative pt-20 pb-12 md:pt-28 md:pb-16 overflow-hidden bg-slate-950">
         {/* Dynamic Abstract Grid Lines & Accents */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[120px] -mr-48 -mt-48 animate-pulse pointer-events-none"></div>
@@ -91,13 +91,13 @@ export default function Events() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <Badge className="bg-indigo-600/90 hover:bg-indigo-600/90 text-white border-none px-4 py-2 rounded-full font-black text-[9px] uppercase tracking-[0.25em] mb-6 shadow-xl shadow-indigo-950/50">
+            <Badge className="bg-indigo-600/90 hover:bg-indigo-600/90 text-white border-none px-4 py-2 rounded-full font-black text-[9px] uppercase tracking-[0.25em] mb-4 shadow-xl shadow-indigo-950/50">
               ⚡ LIVE EVENT PORTAL
             </Badge>
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tight uppercase mb-6 leading-[1.05]">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-white tracking-tight uppercase mb-4 leading-[1.05]">
               Discover <span className="text-indigo-400">Events</span>
             </h1>
-            <p className="text-slate-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto font-medium leading-relaxed opacity-90 max-w-2xl">
+            <p className="text-slate-400 text-xs sm:text-sm md:text-base max-w-xl mx-auto font-medium leading-relaxed opacity-90">
               Vote for your favorite nominees in verified pageants and award ceremonies, or secure premium entrance passes to top-tier events. safe, reliable, and instantaneous.
             </p>
           </motion.div>
@@ -105,7 +105,7 @@ export default function Events() {
       </section>
 
       {/* Main content viewport */}
-      <section className="container mx-auto px-4 sm:px-6 -mt-12 relative z-20">
+      <section className="container mx-auto px-4 sm:px-6 -mt-6 relative z-20">
         
         {/* Sleek Glassmorphic Controls Panel */}
         <motion.div 
